@@ -12,6 +12,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Configure authorized paths
+ *
+ * @author diegotobalina
+ */
 @EnableWebSecurity public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired AuthService authService;

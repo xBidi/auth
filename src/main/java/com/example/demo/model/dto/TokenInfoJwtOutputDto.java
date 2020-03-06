@@ -9,6 +9,11 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * Token info endpoint output dto for jwt
+ *
+ * @author diegotobalina
+ */
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter public class TokenInfoJwtOutputDto
     extends TokenInfoOutputDto {
 

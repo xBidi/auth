@@ -9,6 +9,11 @@ import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Token functions
+ *
+ * @author diegotobalina
+ */
 @Service public class TokenService {
 
 

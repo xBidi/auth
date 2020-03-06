@@ -18,6 +18,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Authentication filter
+ *
+ * @author diegotobalina
+ */
 @Slf4j public class AuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthService authService;

@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Scope repository
+ *
+ * @author diegotobalina
+ */
 @Repository public interface ScopeRepository extends JpaRepository<Scope, String> {
     Optional<Scope> findByValue(String value);
 }

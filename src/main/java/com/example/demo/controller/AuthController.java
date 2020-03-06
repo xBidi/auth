@@ -13,6 +13,11 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 
+/**
+ * Authorization endpoints
+ *
+ * @author diegotobalina
+ */
 @RestController @RequestMapping("${server.context.path}/${server.api.version}/${server.path.oauth}")
 @ResponseStatus(HttpStatus.OK) public class AuthController {
 

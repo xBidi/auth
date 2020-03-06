@@ -8,13 +8,16 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
-@Configuration
-public class MockDatabaseConfig {
+/**
+ * Change database postgres -> h2 in memory for tests
+ *
+ * @author diegotobalina
+ */
+@Configuration public class MockDatabaseConfig {
 
-    @Bean
-    @Primary
-    public DataSource getDataSource() {
-        @SuppressWarnings("rawtypes") DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+    @Bean @Primary public DataSource getDataSource() {
+        @SuppressWarnings("rawtypes") DataSourceBuilder dataSourceBuilder =
+            DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("org.h2.Driver");
         dataSourceBuilder.url("jdbc:h2:mem:test");
         dataSourceBuilder.username("SA");
