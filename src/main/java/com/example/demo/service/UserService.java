@@ -11,9 +11,7 @@ import com.example.demo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,8 +49,7 @@ import java.util.Optional;
         return optionalUser.get();
     }
 
-    public RegisterOutputDto register(RegisterInputDto registerInputDto)
-        throws Exception {
+    public RegisterOutputDto register(RegisterInputDto registerInputDto) throws Exception {
         String username = registerInputDto.getUsername();
         String password = registerInputDto.getPassword();
         List<Role> roles = new ArrayList<>();
@@ -64,6 +61,10 @@ import java.util.Optional;
         scopes.add(scopeService.findByValue("MODIFY"));
         scopes.add(scopeService.findByValue("DELETE"));
         User user = new User(username, password, roles, scopes);
+        // test username duplicated
+        if (this.userRepository.findByUsername(username).isPresent()) {
+            throw new Exception("There is already an account with username: " + username);
+        }
         User createdUser = this.userRepository.save(user);
         return new RegisterOutputDto(createdUser.getId(), createdUser.getUsername());
     }
