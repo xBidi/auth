@@ -5,7 +5,6 @@ application in production
 ````
 https://springsecuritydev.herokuapp.com/swagger-ui.html
 https://springsecuritypro.herokuapp.com
-https://springsecurity.herokuapp.com
 https://circleci.com/gh/xBidi/spring
 https://sonarcloud.io/dashboard?id=xBidi_spring
 ````
