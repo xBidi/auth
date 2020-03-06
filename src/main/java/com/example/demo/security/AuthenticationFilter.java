@@ -35,6 +35,7 @@ import java.util.List;
             chain.doFilter(request, response);
             return;
         }
+        token = token.replace("Bearer ", "");
         try {
             User user = authService.validateJwt(token);
             List<SimpleGrantedAuthority> simpleGrantedAuthorities =
