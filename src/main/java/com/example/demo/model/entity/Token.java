@@ -8,6 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.sql.Timestamp;
 
+
+/**
+ * Token entity
+ *
+ * @author diegotobalina
+ */
 @Entity @NoArgsConstructor @Getter @Setter public class Token {
 
     @Id private String id;

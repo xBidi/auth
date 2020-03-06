@@ -7,6 +7,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Role functions
+ *
+ * @author diegotobalina
+ */
 @Service public class RoleService {
 
     @Autowired RoleRepository roleRepository;

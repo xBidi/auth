@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+/**
+ * User entity
+ *
+ * @author diegotobalina
+ */
 @Entity @Getter @Setter @NoArgsConstructor @EntityListeners(UserListener.class)
 @Table(name = "spring_user") public class User {
 

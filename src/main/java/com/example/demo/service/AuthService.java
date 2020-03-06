@@ -24,6 +24,11 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Authentication functions
+ *
+ * @author diegotobalina
+ */
 @Service @Slf4j public class AuthService {
 
     @Autowired UserService userService;

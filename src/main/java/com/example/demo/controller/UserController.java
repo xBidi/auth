@@ -19,6 +19,11 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * User endpoints
+ *
+ * @author diegotobalina
+ */
 @RestController @RequestMapping("${server.context.path}/${server.api.version}/${server.path.users}")
 @ResponseStatus(HttpStatus.OK) public class UserController {
 
