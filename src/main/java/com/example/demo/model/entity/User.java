@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Entity @Getter @Setter @NoArgsConstructor @EntityListeners(UserListener.class) @Table(name = "spring_user") public class User {
+@Entity @Getter @Setter @NoArgsConstructor @EntityListeners(UserListener.class)
+@Table(name = "spring_user") public class User {
 
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-    private String username;
+    @Column(unique = true) private String username;
     private String password;
     @OneToMany(cascade = CascadeType.ALL) private List<Token> tokens = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.DETACH) private List<Role> roles = new ArrayList<>();
