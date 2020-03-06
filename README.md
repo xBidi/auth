@@ -4,6 +4,7 @@ Project template for java spring
 application in production
 ````
 https://springsecuritydev.herokuapp.com/swagger-ui.html
+https://springsecuritypre.herokuapp.com
 https://springsecuritypro.herokuapp.com
 https://circleci.com/gh/xBidi/spring
 https://sonarcloud.io/dashboard?id=xBidi_spring
