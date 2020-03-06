@@ -14,7 +14,7 @@ jobs:
           command: mvn verify sonar:sonar
 
 workflows:
-  maven_test:
+  general:
     jobs:
       - build:
           context: SonarCloud
