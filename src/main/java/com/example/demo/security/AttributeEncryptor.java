@@ -27,12 +27,13 @@ import java.util.Base64;
     @Value("${spring.security.encryption.method}") private String AES;
     @Value("${spring.security.encryption.secret}") private String SECRET;
     @Value("${spring.security.encryption.iv}") private byte[] iv;
+    @Value("${spring.security.encryption.secret.key.spec}") private String secretKeySpec;
 
     private Key key;
     private Cipher cipher;
 
     private void init() throws NoSuchPaddingException, NoSuchAlgorithmException {
-        key = new SecretKeySpec(SECRET.getBytes(), "AES");
+        key = new SecretKeySpec(SECRET.getBytes(), secretKeySpec);
         cipher = Cipher.getInstance(AES);
     }
 
