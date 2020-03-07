@@ -37,8 +37,8 @@ import java.util.List;
         log.debug("{doFilterInternal start}");
         String token = request.getHeader("Authorization");
         if (token == null || token.isEmpty()) {
-            chain.doFilter(request, response);
             log.debug("{doFilterInternal end} no token");
+            chain.doFilter(request, response);
             return;
         }
         token = token.replace("Bearer ", "");
