@@ -92,14 +92,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         String userid = "userid";
         User expectedUser = new User();
         expectedUser.setId(userid);
-        Mockito.when(userRepository.findByTokensId(token)).thenReturn(Optional.of(expectedUser));
+        Mockito.when(userRepository.findByTokensToken(token)).thenReturn(Optional.of(expectedUser));
         User user = this.userService.findByToken(token);
         assertEquals(expectedUser, user);
     }
 
     @Test public void findByTokenException() throws Exception {
         String token = "token";
-        Mockito.when(userRepository.findByTokensId(token)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByTokensToken(token)).thenReturn(Optional.empty());
         try {
             this.userService.findByToken(token);
         } catch (Exception e) {
@@ -162,7 +162,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         token.setId(tokenString);
         user.getTokens().add(token);
         Mockito.when(userRepository.save(user)).thenReturn(user);
-        Mockito.when(userRepository.findByTokensId(tokenString)).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByTokensToken(tokenString)).thenReturn(Optional.of(user));
         userService.removeToken(tokenString);
         User expectedUser = new User();
         assertEquals(expectedUser.getTokens(), user.getTokens());
