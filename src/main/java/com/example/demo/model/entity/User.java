@@ -4,6 +4,7 @@ import com.example.demo.security.AttributeEncryptor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
  * @author diegotobalina
  */
 @Entity @Getter @Setter @NoArgsConstructor @EntityListeners(UserListener.class)
-@Table(name = "spring_user") public class User {
+@Table(name = "spring_user") @ToString public class User {
 
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;

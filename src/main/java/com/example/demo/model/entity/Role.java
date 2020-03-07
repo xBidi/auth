@@ -2,6 +2,7 @@ package com.example.demo.model.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
@@ -14,7 +15,7 @@ import javax.persistence.Id;
  *
  * @author diegotobalina
  */
-@Entity @NoArgsConstructor @Getter public class Role {
+@Entity @NoArgsConstructor @Getter @ToString public class Role {
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     private String name;
