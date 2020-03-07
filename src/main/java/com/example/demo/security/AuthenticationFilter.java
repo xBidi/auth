@@ -34,10 +34,11 @@ import java.util.List;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws ServletException, IOException {
-
+        log.debug("{doFilterInternal start}");
         String token = request.getHeader("Authorization");
         if (token == null || token.isEmpty()) {
             chain.doFilter(request, response);
+            log.debug("{doFilterInternal end} no token");
             return;
         }
         token = token.replace("Bearer ", "");
@@ -50,12 +51,12 @@ import java.util.List;
                     simpleGrantedAuthorities);
             SecurityContextHolder.getContext()
                 .setAuthentication(usernamePasswordAuthenticationToken);
+            log.debug("{doFilterInternal end} authentication ok");
         } catch (JwtException ex) {
-            log.warn("invalid jwt");
+            log.warn("{doFilterInternal end} invalid jwt");
         } finally {
             chain.doFilter(request, response);
         }
-
 
     }
 

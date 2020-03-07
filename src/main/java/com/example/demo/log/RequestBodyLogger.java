@@ -1,5 +1,6 @@
 package com.example.demo.log;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
@@ -10,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAd
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
 
-@ControllerAdvice public class RequestBodyLogger extends RequestBodyAdviceAdapter {
+@ControllerAdvice @Slf4j public class RequestBodyLogger extends RequestBodyAdviceAdapter {
 
     @Autowired LoggingService loggingService;
 
@@ -24,10 +25,12 @@ import java.lang.reflect.Type;
     @Override public Object afterBodyRead(Object body, HttpInputMessage inputMessage,
         MethodParameter parameter, Type targetType,
         Class<? extends HttpMessageConverter<?>> converterType) {
-
+        log.debug("{afterBodyRead start}");
         loggingService.logRequest(httpServletRequest, body);
-
-        return super.afterBodyRead(body, inputMessage, parameter, targetType, converterType);
+        Object afterBodyRead =
+            super.afterBodyRead(body, inputMessage, parameter, targetType, converterType);
+        log.debug("{afterBodyRead end}");
+        return afterBodyRead;
     }
 
 }

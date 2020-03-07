@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.service.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author diegotobalina
  */
-@EnableWebSecurity public class WebSecurity extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity @Slf4j public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired AuthService authService;
     @Value("${server.context.path}") private String contextPath;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
     @Value("${server.path.oauth}") private String authPath;
 
     @Override protected void configure(HttpSecurity http) throws Exception {
+        log.debug("{configure start}");
         http.
             csrf().
             disable().
@@ -54,7 +56,7 @@ import javax.servlet.http.HttpServletResponse;
             and().
             addFilterBefore(new AuthenticationFilter(authService),
                 UsernamePasswordAuthenticationFilter.class);
-
+        log.debug("{configure end}");
 
     }
 }
