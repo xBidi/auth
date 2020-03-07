@@ -3,6 +3,7 @@ package com.example.demo.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,7 +15,7 @@ import java.sql.Timestamp;
  *
  * @author diegotobalina
  */
-@Entity @NoArgsConstructor @Getter @Setter public class Token {
+@Entity @NoArgsConstructor @Getter @Setter @ToString public class Token {
 
     @Id private String id;
     private Timestamp expeditionDate;

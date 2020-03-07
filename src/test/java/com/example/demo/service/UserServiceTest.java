@@ -127,6 +127,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         assertEquals(createdUser.getUsername(), registerOutputDto.getUsername());
     }
 
+    @Test public void registerDuplicatedUsername() throws Exception {
+        String username = "username";
+        String password = "password";
+        RegisterInputDto registerInputDto = new RegisterInputDto(username, password);
+        Mockito.when(userRepository.findByUsername(Mockito.anyString()))
+            .thenReturn(Optional.of(new User()));
+        try {
+            this.userService.register(registerInputDto);
+        } catch (Exception e) {
+            if (e.getMessage().equals("There is already an account with username: " + username)) {
+                assertTrue(true);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     @Test public void addTokenOk() {
         User user = new User();
         Token token = new Token();

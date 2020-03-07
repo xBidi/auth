@@ -56,6 +56,10 @@ import java.util.Optional;
 
     public RegisterOutputDto register(RegisterInputDto registerInputDto) throws Exception {
         String username = registerInputDto.getUsername();
+        // test username duplicated
+        if (this.userRepository.findByUsername(username).isPresent()) {
+            throw new Exception("There is already an account with username: " + username);
+        }
         String password = registerInputDto.getPassword();
         List<Role> roles = new ArrayList<>();
         roles.add(roleService.findByValue("ROLE_USER"));
@@ -66,10 +70,6 @@ import java.util.Optional;
         scopes.add(scopeService.findByValue("MODIFY"));
         scopes.add(scopeService.findByValue("DELETE"));
         User user = new User(username, password, roles, scopes);
-        // test username duplicated
-        if (this.userRepository.findByUsername(username).isPresent()) {
-            throw new Exception("There is already an account with username: " + username);
-        }
         User createdUser = this.userRepository.save(user);
         return new RegisterOutputDto(createdUser.getId(), createdUser.getUsername());
     }

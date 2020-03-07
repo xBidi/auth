@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -14,12 +15,14 @@ import java.net.URISyntaxException;
  *
  * @author diegotobalina
  */
-@Configuration public class MainConfig {
+@Configuration @Slf4j public class MainConfig {
 
     @Value("${spring.datasource.url}") private String databaseUri;
     @Value("${spring.datasource.ssl}") private String dataSourceSsl;
 
     @Bean public DataSource dataSource() throws URISyntaxException {
+        log.debug("data source configuration (databaseUri): " + databaseUri);
+        log.debug("data source configuration (dataSourceSsl): " + dataSourceSsl);
         String jdbcPrefix = "jdbc:postgresql://";
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         if (!databaseUri.startsWith(jdbcPrefix)) {
@@ -35,7 +38,6 @@ import java.net.URISyntaxException;
         } else {
             dataSourceBuilder.url(databaseUri);
         }
-
         return dataSourceBuilder.build();
     }
 }
