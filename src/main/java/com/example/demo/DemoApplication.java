@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
     @Bean LoggingService loggingService() {
+        log.debug("{loggingService bean} creating new bean");
         return new LoggingService() {
             @Override public void logRequest(HttpServletRequest httpServletRequest, Object body) {
                 log.debug(body.toString());

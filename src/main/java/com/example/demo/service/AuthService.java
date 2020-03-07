@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
     @Transactional(rollbackOn = Exception.class)
     public LoginOutputDto login(LoginInputDto loginInputDto) throws Exception {
+        log.debug("{login start}");
         User user = this.userService.findByUsername(loginInputDto.getUsername());
         String inputPassword = loginInputDto.getPassword();
         String userPasswordHash = user.getPassword();
@@ -46,12 +47,16 @@ import java.util.regex.Pattern;
         }
         Token token = this.tokenService.generateToken();
         this.userService.addToken(user, token);
-        return new LoginOutputDto(token.getToken(), token.getExpeditionDate().toString(),
-            token.getExpirationDate().toString());
+        LoginOutputDto loginOutputDto =
+            new LoginOutputDto(token.getToken(), token.getExpeditionDate().toString(),
+                token.getExpirationDate().toString());
+        log.debug("{login end}");
+        return loginOutputDto;
     }
 
     @Transactional(rollbackOn = Exception.class)
     public AccessOutputDto access(AccessInputDto accessInputDto) throws Exception {
+        log.debug("{access start}");
         String tokenString = accessInputDto.getToken();
         tokenString = tokenString.replace("Bearer ", "");
         tokenService.findByToken(tokenString);
@@ -70,17 +75,23 @@ import java.util.regex.Pattern;
         String token = Jwts.builder().setId("").setSubject(username).setClaims(claims)
             .setIssuedAt(new Date(currentTimeMillis)).setExpiration(new Date(expirationTimeMillis))
             .signWith(SignatureAlgorithm.HS512, secretKey.getBytes()).compact();
-        return new AccessOutputDto(token, expeditionDate.toString(), expirationDate.toString());
+        AccessOutputDto accessOutputDto =
+            new AccessOutputDto(token, expeditionDate.toString(), expirationDate.toString());
+        log.debug("{access end}");
+        return accessOutputDto;
     }
 
     public void logout(LogoutInputDto logoutInputDto) throws Exception {
+        log.debug("{logout start}");
         String token = logoutInputDto.getToken();
         token = token.replace("Bearer ", "");
         this.tokenService.removeToken(token);
+        log.debug("{logout end}");
     }
 
 
     public User validateJwt(String token) {
+        log.debug("{validateJwt start}");
         Claims claims = this.validateToken(token);
         ObjectMapper mapper = new ObjectMapper();
         List<Role> roles =
@@ -89,26 +100,39 @@ import java.util.regex.Pattern;
         List<Scope> scopes =
             mapper.convertValue(claims.get("scopes"), new TypeReference<List<Scope>>() {
             });
-        String user = (String) claims.get("user");
-        return new User(user, "", "", roles, scopes);
+        String userString = (String) claims.get("user");
+        User user = new User(userString, "", "", roles, scopes);
+        log.debug("{validateJwt end}");
+        return user;
     }
 
     private Claims validateToken(String token) {
-        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token).getBody();
+        log.debug("{validateToken start}");
+        Claims claims =
+            Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token).getBody();
+        log.debug("{validateToken end}");
+        return claims;
     }
 
     public TokenInfoOutputDto tokenInfo(TokenInfoInputDto tokenInfoInputDto) throws Exception {
+        log.debug("{tokenInfo start}");
         String tokenString = tokenInfoInputDto.getToken();
         tokenString = tokenString.replace("Bearer ", "");
         String regex = "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(tokenString);
         if (!m.matches()) {
+            log.debug("{tokenInfo} start token validation");
             User user = userService.findByToken(tokenString);
             Token token = tokenService.findByToken(tokenString);
-            return new TokenInfoOutputDto(tokenString, token.getExpeditionDate().toString(),
-                token.getExpirationDate().toString(), user.getId());
+            TokenInfoOutputDto tokenInfoOutputDto =
+                new TokenInfoOutputDto(tokenString, token.getExpeditionDate().toString(),
+                    token.getExpirationDate().toString(), user.getId());
+            log.debug("{tokenInfo} end token validation");
+            log.debug("{tokenInfo end} token");
+            return tokenInfoOutputDto;
         } else {
+            log.debug("{tokenInfo} start jwt validation");
             Claims claims = this.validateToken(tokenString);
             Integer expeditionDate = (Integer) claims.get("iat");
             Integer expirationDate = (Integer) claims.get("exp");
@@ -121,19 +145,27 @@ import java.util.regex.Pattern;
             for (Scope scope : user.getScopes()) {
                 scopes.add(scope.getValue());
             }
-            return new TokenInfoJwtOutputDto(tokenString, new Timestamp(expeditionDate).toString(),
-                new Timestamp(expirationDate).toString(), user.getId(), roles, scopes);
+            TokenInfoJwtOutputDto tokenInfoJwtOutputDto =
+                new TokenInfoJwtOutputDto(tokenString, new Timestamp(expeditionDate).toString(),
+                    new Timestamp(expirationDate).toString(), user.getId(), roles, scopes);
+            log.debug("{tokenInfo} end jwt validation");
+            log.debug("{tokenInfo end} jwt");
+            return tokenInfoJwtOutputDto;
         }
     }
 
     @Transactional public UserInfoOutputDto findByPrincipal(Principal principal) throws Exception {
+        log.debug("{findByPrincipal start}");
         UsernamePasswordAuthenticationToken authenticationToken =
             (UsernamePasswordAuthenticationToken) principal;
         User tempUser = (User) authenticationToken.getPrincipal();
-        return getUserInfoOutputDto(tempUser.getId());
+        UserInfoOutputDto userInfoOutputDto = getUserInfoOutputDto(tempUser.getId());
+        log.debug("{findByPrincipal end}");
+        return userInfoOutputDto;
     }
 
     public UserInfoOutputDto getUserInfoOutputDto(String userId) throws Exception {
+        log.debug("{getUserInfoOutputDto start}");
         User user = this.userService.findById(userId);
         List<String> roles = new ArrayList<>();
         user.getRoles().stream().forEach(role -> roles.add(role.getValue()));
@@ -146,9 +178,11 @@ import java.util.regex.Pattern;
                 sessions.add(new TokenDto(token.getToken(), token.getExpeditionDate().toString(),
                     token.getExpirationDate().toString()));
             } catch (Exception ex) {
-                log.warn(ex.getMessage());
+                log.warn(
+                    "{getUserInfoOutputDto} (this.tokenService.checkToken):" + ex.getMessage());
             }
         });
+        log.debug("{getUserInfoOutputDto end}");
         return new UserInfoOutputDto(user.getId(), user.getUsername(), roles, scopes, sessions);
     }
 }
