@@ -1,10 +1,7 @@
 package com.example.demo.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.List;
  *
  * @author diegotobalina
  */
-@AllArgsConstructor @NoArgsConstructor @Getter @Setter public class TokenInfoJwtOutputDto
+@AllArgsConstructor @NoArgsConstructor @Getter @Setter @ToString public class TokenInfoJwtOutputDto
     extends TokenInfoOutputDto {
 
     @ApiModelProperty(example = "[ROLE_USER,ROLE_ADMIN]")private List<String> roles;
