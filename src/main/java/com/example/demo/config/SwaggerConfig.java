@@ -11,6 +11,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.security.Principal;
 
+/**
+ * Swagger-ui endpoint configuration
+ *
+ * @author diegotobalina
+ */
 @Configuration @EnableSwagger2 @Profile("dev") public class SwaggerConfig {
     @Bean public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).

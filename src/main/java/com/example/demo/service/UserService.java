@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * User functions
+ *
+ * @author diegotobalina
+ */
 @Service @Slf4j public class UserService {
 
     @Autowired UserRepository userRepository;

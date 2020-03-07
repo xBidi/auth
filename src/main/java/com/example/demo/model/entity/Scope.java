@@ -9,6 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Scope entity
+ *
+ * @author diegotobalina
+ */
 @Entity @Getter @NoArgsConstructor public class Scope {
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;

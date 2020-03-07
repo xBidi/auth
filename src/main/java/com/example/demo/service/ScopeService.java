@@ -7,6 +7,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Scope functions
+ *
+ * @author diegotobalina
+ */
 @Service public class ScopeService {
 
     @Autowired ScopeRepository ScopeRepository;

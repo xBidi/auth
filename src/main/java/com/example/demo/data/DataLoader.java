@@ -14,13 +14,18 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Initial database status
+ *
+ * @author diegotobalina
+ */
 @Component public class DataLoader implements ApplicationRunner {
     @Autowired RoleRepository roleRepository;
     @Autowired ScopeRepository scopeRepository;
     @Autowired UserRepository userRepository;
 
     public void run(ApplicationArguments args) {
-        if (userRepository.findAll().size() > 0){
+        if (userRepository.findAll().size() > 0) {
             return;
         }
         Role roleUser = new Role("user", "generic role", "ROLE_USER");

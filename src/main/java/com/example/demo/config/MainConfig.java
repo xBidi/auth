@@ -9,6 +9,11 @@ import javax.sql.DataSource;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * App data source configuration
+ *
+ * @author diegotobalina
+ */
 @Configuration public class MainConfig {
 
     @Value("${spring.datasource.url}") private String databaseUri;

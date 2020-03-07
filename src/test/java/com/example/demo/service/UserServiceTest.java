@@ -23,6 +23,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * User service tests
+ *
+ * @author diegotobalina
+ */
 @SpringBootTest public class UserServiceTest {
 
     @InjectMocks UserService userService;
