@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,8 +17,9 @@ import java.security.Principal;
  *
  * @author diegotobalina
  */
-@Configuration @EnableSwagger2 @Profile("dev") public class SwaggerConfig {
+@Configuration @EnableSwagger2 @Profile("dev") @Slf4j public class SwaggerConfig {
     @Bean public Docket api() {
+        log.debug("swagger configuration");
         return new Docket(DocumentationType.SWAGGER_2).
             useDefaultResponseMessages(false).
             ignoredParameterTypes(Principal.class).
