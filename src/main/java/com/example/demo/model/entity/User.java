@@ -1,5 +1,6 @@
 package com.example.demo.model.entity;
 
+import com.example.demo.security.AttributeEncryptor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     @Column(unique = true) private String username;
-    private String password;
+    @Convert(converter = AttributeEncryptor.class) private String password;
     @OneToMany(cascade = CascadeType.ALL) private List<Token> tokens = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.DETACH) private List<Role> roles = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.DETACH) private List<Scope> scopes = new ArrayList<>();
