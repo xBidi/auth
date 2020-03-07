@@ -159,7 +159,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         User user = new User();
         String tokenString = "token";
         Token token = new Token();
-        token.setId(tokenString);
+        token.setToken(tokenString);
         user.getTokens().add(token);
         Mockito.when(userRepository.save(user)).thenReturn(user);
         Mockito.when(userRepository.findByTokensToken(tokenString)).thenReturn(Optional.of(user));
