@@ -29,10 +29,10 @@ import java.util.UUID;
         return tokenRepository.save(token);
     }
 
-    public Token findById(String id) throws Exception {
-        Optional<Token> optionalToken = this.tokenRepository.findById(id);
+    public Token findByToken(String tokenString) throws Exception {
+        Optional<Token> optionalToken = this.tokenRepository.findByToken(tokenString);
         if (!optionalToken.isPresent()) {
-            throw new Exception("Token not found with id: " + id);
+            throw new Exception("Token not found with id: " + tokenString);
         }
         Token token = optionalToken.get();
         checkToken(token);
@@ -42,22 +42,22 @@ import java.util.UUID;
     public void checkToken(Token token) throws Exception {
         if (token.getExpirationDate().getTime() < System.currentTimeMillis()) {
             this.removeToken(token);
-            throw new Exception("Token expired: " + token.getId());
+            throw new Exception("Token expired: " + token.getToken());
         }
     }
 
     public void removeToken(Token token) throws Exception {
-        this.userService.removeToken(token.getId());
-        this.tokenRepository.deleteById(token.getId());
+        this.userService.removeToken(token.getToken());
+        this.tokenRepository.deleteById(token.getToken());
     }
 
     public void removeToken(String tokenString) throws Exception {
-        this.removeToken(this.findById(tokenString));
+        this.removeToken(this.findByToken(tokenString));
     }
 
 
     public void refreshToken(String tokenString) throws Exception {
-        Token token = this.findById(tokenString);
+        Token token = this.findByToken(tokenString);
         token.setExpirationDate(this.getExpirationDate());
         this.tokenRepository.save(token);
     }

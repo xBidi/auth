@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
         }
         Token token = this.tokenService.generateToken();
         this.userService.addToken(user, token);
-        return new LoginOutputDto(token.getId(), token.getExpeditionDate().toString(),
+        return new LoginOutputDto(token.getToken(), token.getExpeditionDate().toString(),
             token.getExpirationDate().toString());
     }
 
@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
     public AccessOutputDto access(AccessInputDto accessInputDto) throws Exception {
         String tokenString = accessInputDto.getToken();
         tokenString = tokenString.replace("Bearer ", "");
-        tokenService.findById(tokenString);
+        tokenService.findByToken(tokenString);
         tokenService.refreshToken(tokenString);
         User user = userService.findByToken(tokenString);
         String username = user.getUsername();
@@ -105,7 +105,7 @@ import java.util.regex.Pattern;
         Matcher m = p.matcher(tokenString);
         if (!m.matches()) {
             User user = userService.findByToken(tokenString);
-            Token token = tokenService.findById(tokenString);
+            Token token = tokenService.findByToken(tokenString);
             return new TokenInfoOutputDto(tokenString, token.getExpeditionDate().toString(),
                 token.getExpirationDate().toString(), user.getId());
         } else {
@@ -143,7 +143,7 @@ import java.util.regex.Pattern;
         user.getTokens().stream().forEach(token -> {
             try {
                 this.tokenService.checkToken(token);
-                sessions.add(new TokenDto(token.getId(), token.getExpeditionDate().toString(),
+                sessions.add(new TokenDto(token.getToken(), token.getExpeditionDate().toString(),
                     token.getExpirationDate().toString()));
             } catch (Exception ex) {
                 log.warn(ex.getMessage());

@@ -47,7 +47,7 @@ import java.util.Optional;
     }
 
     public User findByToken(String token) throws Exception {
-        Optional<User> optionalUser = this.userRepository.findByTokensId(token);
+        Optional<User> optionalUser = this.userRepository.findByTokensToken(token);
         if (!optionalUser.isPresent()) {
             throw new Exception("Unknown user with token: " + token);
         }
@@ -81,7 +81,7 @@ import java.util.Optional;
 
     public void removeToken(String tokenString) throws Exception {
         User user = this.findByToken(tokenString);
-        user.getTokens().removeIf(token -> token.getId().equals(tokenString));
+        user.getTokens().removeIf(token -> token.getToken().equals(tokenString));
         this.userRepository.save(user);
     }
 
