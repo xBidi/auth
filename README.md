@@ -27,6 +27,12 @@ generate jar
 mvn install
 ````
 
+docker deploy
+````
+docker volume create db-data
+docker-compose up
+````
+
 deploy on heroku
 ````
 heroku login

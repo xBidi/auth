@@ -1,0 +1,41 @@
+version: '2'
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    networks:
+      - spring-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: database
+  spring:
+    container_name: spring
+    image: spring
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    networks:
+      - spring-network
+    links:
+      - postgres:postgres
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://postgres:mysecretpassword@postgres:5432/database
+      DATABASE_SSL: disable
+networks:
+  spring-network:
+    driver: bridge
+volumes:
+  db-data:
+    external: true
