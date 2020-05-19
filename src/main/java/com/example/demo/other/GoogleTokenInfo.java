@@ -1,10 +1,11 @@
 package com.example.demo.other;
 
-import com.example.demo.model.dto.SpringTokenDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-@Data @NoArgsConstructor public class GoogleTokenInfo extends SpringTokenDto  {
+/**
+ * @author diegotobalina
+ */
+@Data @NoArgsConstructor public class GoogleTokenInfo {
 
     private String iss;
     private String azp;
