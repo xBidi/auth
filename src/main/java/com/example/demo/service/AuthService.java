@@ -5,9 +5,13 @@ import com.example.demo.model.entity.Role;
 import com.example.demo.model.entity.Scope;
 import com.example.demo.model.entity.Token;
 import com.example.demo.model.entity.User;
-import com.example.demo.other.GoogleTokenInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,15 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.*;
@@ -40,6 +43,7 @@ import java.util.regex.Pattern;
     @Autowired UserService userService;
     @Autowired TokenService tokenService;
     @Value("${server.auth.secret-key}") private String secretKey;
+    @Value("${google.oauth2.CLIENT_ID}") private String googleClientId;
 
     @Transactional(rollbackOn = Exception.class)
     public LoginOutputDto login(LoginInputDto loginInputDto) throws Exception {
@@ -148,15 +152,18 @@ import java.util.regex.Pattern;
             Integer expeditionDate;
             Integer expirationDate;
             User user;
-            try {
+            try { // TODO: need refactor
                 Claims claims = this.validateToken(tokenString);
                 expeditionDate = (Integer) claims.get("iat");
                 expirationDate = (Integer) claims.get("exp");
                 user = this.validateJwt(tokenString);
             } catch (Exception ex) {
-                GoogleTokenInfo googleInfo = getGoogleInfo(tokenString);
-                expeditionDate = Integer.valueOf(googleInfo.getIat());
-                expirationDate = Integer.valueOf(googleInfo.getExp());
+                GoogleIdToken.Payload googleInfo = getGoogleInfo(tokenString);
+                if (googleInfo == null) {
+                    throw new Exception("failed google login");
+                }
+                expeditionDate = Math.toIntExact(googleInfo.getIssuedAtTimeSeconds());
+                expirationDate = Math.toIntExact(googleInfo.getExpirationTimeSeconds());
                 user = googleLogin(googleInfo);
             }
 
@@ -211,13 +218,28 @@ import java.util.regex.Pattern;
         return new UserInfoOutputDto(user.getId(), user.getUsername(), roles, scopes, sessions);
     }
 
-    @Cacheable("google") public GoogleTokenInfo getGoogleInfo(String token) {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<GoogleTokenInfo> responseEntity = restTemplate
-            .getForEntity("https://oauth2.googleapis.com/tokeninfo?id_token=" + token,
-                GoogleTokenInfo.class);
-        GoogleTokenInfo googleTokenInfo = responseEntity.getBody();
-        return googleTokenInfo;
+    private NetHttpTransport transport;
+    private JacksonFactory jsonFactory;
+
+    public GoogleIdToken.Payload getGoogleInfo(String token)
+        throws GeneralSecurityException, IOException {
+        if (transport == null && jsonFactory == null) {
+            transport = GoogleNetHttpTransport.newTrustedTransport();
+            jsonFactory = JacksonFactory.getDefaultInstance();
+        }
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+            // Specify the CLIENT_ID of the app that accesses the backend:
+            .setAudience(Collections.singletonList(googleClientId))
+            // Or, if multiple clients access the backend:
+            //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+            .build();
+        // (Receive idTokenString by HTTPS POST)
+        GoogleIdToken idToken = verifier.verify(token);
+        if (idToken != null) {
+            return idToken.getPayload();
+        } else {
+            return null;
+        }
     }
 
     // remove google cache every 10 sec
@@ -225,15 +247,12 @@ import java.util.regex.Pattern;
     public void cacheEvict() {
     }
 
-    public User googleLogin(GoogleTokenInfo googleTokenInfo) throws Exception {
-        String email = googleTokenInfo.getEmail();
-        String nombre = googleTokenInfo.getGiven_name();
-        String apellidos = googleTokenInfo.getFamily_name();
-        String imagen = googleTokenInfo.getPicture();
+    public User googleLogin(GoogleIdToken.Payload payload) throws Exception {
+        String email = payload.getEmail();
         String username = email.split("@")[0] + UUID.randomUUID().toString().substring(0, 4);
-        User user = new User(null, username, email, null, null, null);
-        // random initial password
-        user.setPassword(System.currentTimeMillis() + "-" + UUID.randomUUID().toString());
+        String randomPassword = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
+        User user =
+            new User(null, username, email, randomPassword, new ArrayList<>(), new ArrayList<>());
         userService.createIfNotExist(user);
         user = userService.findByEmail(email);
         return user;

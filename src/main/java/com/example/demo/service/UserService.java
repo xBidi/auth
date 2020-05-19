@@ -91,7 +91,7 @@ import java.util.Optional;
         User user = new User(username, email, password, new ArrayList<>(), new ArrayList<>());
         User createdUser = createIfNotExist(user);
         RegisterOutputDto registerOutputDto =
-            new RegisterOutputDto(createdUser.getId(),  createdUser.getUsername(),email);
+            new RegisterOutputDto(createdUser.getId(), createdUser.getUsername(), email);
         log.debug("{register end}");
         return registerOutputDto;
     }

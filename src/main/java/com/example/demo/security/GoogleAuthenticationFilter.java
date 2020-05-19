@@ -2,8 +2,8 @@ package com.example.demo.security;
 
 import com.example.demo.model.entity.Role;
 import com.example.demo.model.entity.User;
-import com.example.demo.other.GoogleTokenInfo;
 import com.example.demo.service.AuthService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,7 +43,10 @@ import java.util.List;
         }
         token = token.replace("Bearer ", "");
         try {
-            GoogleTokenInfo googleInfo = this.authService.getGoogleInfo(token);
+            GoogleIdToken.Payload googleInfo = this.authService.getGoogleInfo(token);
+            if (googleInfo == null) {
+                throw new Exception("google failed login");
+            }
             User user = this.authService.googleLogin(googleInfo);
             List<SimpleGrantedAuthority> simpleGrantedAuthorities =
                 this.getSimpleGrantedAuthorities(user.getRoles());
