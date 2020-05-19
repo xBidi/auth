@@ -13,5 +13,6 @@ import lombok.ToString;
  */
 @AllArgsConstructor @Getter @Setter @ToString public class LoginInputDto {
     @ApiModelProperty(example = "user") private String username;
+    @ApiModelProperty(example = "email") private String email;
     @ApiModelProperty(example = "password") private String password;
 }

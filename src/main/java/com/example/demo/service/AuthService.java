@@ -5,6 +5,7 @@ import com.example.demo.model.entity.Role;
 import com.example.demo.model.entity.Scope;
 import com.example.demo.model.entity.Token;
 import com.example.demo.model.entity.User;
+import com.example.demo.other.GoogleTokenInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -13,9 +14,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
@@ -38,7 +44,12 @@ import java.util.regex.Pattern;
     @Transactional(rollbackOn = Exception.class)
     public LoginOutputDto login(LoginInputDto loginInputDto) throws Exception {
         log.debug("{login start}");
-        User user = this.userService.findByUsername(loginInputDto.getUsername());
+        User user;
+        if (!loginInputDto.getUsername().isEmpty()) {
+            user = this.userService.findByUsername(loginInputDto.getUsername());
+        } else {
+            user = this.userService.findByEmail(loginInputDto.getEmail());
+        }
         String inputPassword = loginInputDto.getPassword();
         String userPasswordHash = user.getPassword();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -101,7 +112,7 @@ import java.util.regex.Pattern;
             mapper.convertValue(claims.get("scopes"), new TypeReference<List<Scope>>() {
             });
         String userString = (String) claims.get("user");
-        User user = new User(userString, "", "", roles, scopes);
+        User user = new User(userString, "", "", "", roles, scopes);
         log.debug("{validateJwt end}");
         return user;
     }
@@ -121,7 +132,7 @@ import java.util.regex.Pattern;
         String regex = "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(tokenString);
-        if (!m.matches()) {
+        if (!m.matches()) { // token de login
             log.debug("{tokenInfo} start token validation");
             User user = userService.findByToken(tokenString);
             Token token = tokenService.findByToken(tokenString);
@@ -131,12 +142,24 @@ import java.util.regex.Pattern;
             log.debug("{tokenInfo} end token validation");
             log.debug("{tokenInfo end} token");
             return tokenInfoOutputDto;
-        } else {
+        }
+        if (m.matches()) {
             log.debug("{tokenInfo} start jwt validation");
-            Claims claims = this.validateToken(tokenString);
-            Integer expeditionDate = (Integer) claims.get("iat");
-            Integer expirationDate = (Integer) claims.get("exp");
-            User user = this.validateJwt(tokenString);
+            Integer expeditionDate;
+            Integer expirationDate;
+            User user;
+            try {
+                Claims claims = this.validateToken(tokenString);
+                expeditionDate = (Integer) claims.get("iat");
+                expirationDate = (Integer) claims.get("exp");
+                user = this.validateJwt(tokenString);
+            } catch (Exception ex) {
+                GoogleTokenInfo googleInfo = getGoogleInfo(tokenString);
+                expeditionDate = Integer.valueOf(googleInfo.getIat());
+                expirationDate = Integer.valueOf(googleInfo.getExp());
+                user = googleLogin(googleInfo);
+            }
+
             List<String> roles = new ArrayList<>();
             for (Role role : user.getRoles()) {
                 roles.add(role.getValue());
@@ -151,7 +174,9 @@ import java.util.regex.Pattern;
             log.debug("{tokenInfo} end jwt validation");
             log.debug("{tokenInfo end} jwt");
             return tokenInfoJwtOutputDto;
+
         }
+        throw new Exception("unknow jwt format");
     }
 
     @Transactional public UserInfoOutputDto findByPrincipal(Principal principal) throws Exception {
@@ -184,5 +209,33 @@ import java.util.regex.Pattern;
         });
         log.debug("{getUserInfoOutputDto end}");
         return new UserInfoOutputDto(user.getId(), user.getUsername(), roles, scopes, sessions);
+    }
+
+    @Cacheable("google") public GoogleTokenInfo getGoogleInfo(String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<GoogleTokenInfo> responseEntity = restTemplate
+            .getForEntity("https://oauth2.googleapis.com/tokeninfo?id_token=" + token,
+                GoogleTokenInfo.class);
+        GoogleTokenInfo googleTokenInfo = responseEntity.getBody();
+        return googleTokenInfo;
+    }
+
+    // remove google cache every 10 sec
+    @CacheEvict(allEntries = true, cacheNames = {"google"}) @Scheduled(fixedDelay = (10000))
+    public void cacheEvict() {
+    }
+
+    public User googleLogin(GoogleTokenInfo googleTokenInfo) throws Exception {
+        String email = googleTokenInfo.getEmail();
+        String nombre = googleTokenInfo.getGiven_name();
+        String apellidos = googleTokenInfo.getFamily_name();
+        String imagen = googleTokenInfo.getPicture();
+        String username = email.split("@")[0] + UUID.randomUUID().toString().substring(0, 4);
+        User user = new User(null, username, email, null, null, null);
+        // random initial password
+        user.setPassword(System.currentTimeMillis() + "-" + UUID.randomUUID().toString());
+        userService.createIfNotExist(user);
+        user = userService.findByEmail(email);
+        return user;
     }
 }
