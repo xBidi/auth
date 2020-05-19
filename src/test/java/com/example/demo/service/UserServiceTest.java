@@ -113,24 +113,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
     @Test public void registerOk() throws Exception {
         String username = "username";
+        String email = "username@email.com";
         String password = "password";
         String userid = "userid";
         User createdUser = new User();
         createdUser.setId(userid);
         createdUser.setUsername(username);
-        RegisterInputDto registerInputDto = new RegisterInputDto(username, password);
+        createdUser.setEmail(email);
+        RegisterInputDto registerInputDto = new RegisterInputDto(username, email, password);
         Mockito.when(roleService.findByValue(Mockito.anyString())).thenReturn(new Role());
         Mockito.when(scopeService.findByValue(Mockito.anyString())).thenReturn(new Scope());
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(createdUser);
         RegisterOutputDto registerOutputDto = userService.register(registerInputDto);
         assertEquals(createdUser.getId(), registerOutputDto.getUserId());
         assertEquals(createdUser.getUsername(), registerOutputDto.getUsername());
+        assertEquals(createdUser.getEmail(), registerOutputDto.getEmail());
     }
 
     @Test public void registerDuplicatedUsername() throws Exception {
         String username = "username";
+        String email = "username@email.com";
         String password = "password";
-        RegisterInputDto registerInputDto = new RegisterInputDto(username, password);
+        RegisterInputDto registerInputDto = new RegisterInputDto(username, email, password);
         Mockito.when(userRepository.findByUsername(Mockito.anyString()))
             .thenReturn(Optional.of(new User()));
         try {

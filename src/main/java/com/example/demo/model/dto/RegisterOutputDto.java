@@ -13,4 +13,5 @@ import lombok.ToString;
 @AllArgsConstructor @Getter @ToString public class RegisterOutputDto {
     @ApiModelProperty(example = "4b4beaba-42d3-4284-bf7c-4a00100bc828") private String userId;
     @ApiModelProperty(example = "user") private String username;
+    @ApiModelProperty(example = "email") private String email;
 }

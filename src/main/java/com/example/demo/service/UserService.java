@@ -40,6 +40,17 @@ import java.util.Optional;
         return optionalUser.get();
     }
 
+    public User findByEmail(String email) throws Exception {
+        log.debug("{findByEmail start}");
+        Optional<User> optionalUser = this.userRepository.findByEmail(email);
+        if (!optionalUser.isPresent()) {
+            log.debug("{findById end} Unknown user with email: " + email);
+            throw new Exception("Unknown user with email: " + email);
+        }
+        log.debug("{findByEmail end}");
+        return optionalUser.get();
+    }
+
 
     public User findByUsername(String username) throws Exception {
         log.debug("{findByUsername start}");
@@ -71,21 +82,43 @@ import java.util.Optional;
             log.debug("{register end} There is already an account with username: " + username);
             throw new Exception("There is already an account with username: " + username);
         }
+        String email = registerInputDto.getEmail();
+        if (this.userRepository.findByEmail(email).isPresent()) {
+            log.debug("{register end} There is already an account with email: " + email);
+            throw new Exception("There is already an account with email: " + email);
+        }
         String password = registerInputDto.getPassword();
-        List<Role> roles = new ArrayList<>();
-        roles.add(roleService.findByValue("ROLE_USER"));
-        roles.add(roleService.findByValue("ROLE_ADMIN"));
-        List<Scope> scopes = new ArrayList<>();
-        scopes.add(scopeService.findByValue("READ"));
-        scopes.add(scopeService.findByValue("CREATE"));
-        scopes.add(scopeService.findByValue("MODIFY"));
-        scopes.add(scopeService.findByValue("DELETE"));
-        User user = new User(username, password, roles, scopes);
-        User createdUser = this.userRepository.save(user);
+        User user = new User(username, email, password, new ArrayList<>(), new ArrayList<>());
+        User createdUser = createIfNotExist(user);
         RegisterOutputDto registerOutputDto =
-            new RegisterOutputDto(createdUser.getId(), createdUser.getUsername());
+            new RegisterOutputDto(createdUser.getId(),  createdUser.getUsername(),email);
         log.debug("{register end}");
         return registerOutputDto;
+    }
+
+    public User createIfNotExist(User user) throws Exception {
+        log.debug("{createIfNotExist start}");
+        String username = user.getUsername();
+        // test username duplicated
+        Optional<User> optionalUser;
+        if ((optionalUser = this.userRepository.findByUsername(username)).isPresent()) {
+            log.debug(
+                "{createIfNotExist end} There is already an account with username: " + username);
+            return optionalUser.get();
+        }
+        String email = user.getEmail();
+        if ((optionalUser = this.userRepository.findByEmail(email)).isPresent()) {
+            log.debug("{createIfNotExist end} There is already an account with email: " + email);
+            return optionalUser.get();
+        }
+        user.getRoles().add(roleService.findByValue("ROLE_USER"));
+        user.getScopes().add(scopeService.findByValue("READ"));
+        user.getScopes().add(scopeService.findByValue("CREATE"));
+        user.getScopes().add(scopeService.findByValue("MODIFY"));
+        user.getScopes().add(scopeService.findByValue("DELETE"));
+        User savedUser = this.userRepository.save(user);
+        log.debug("{createIfNotExistByEmail end} saved user: " + savedUser.toString());
+        return savedUser;
     }
 
     public User addToken(User user, Token token) {
