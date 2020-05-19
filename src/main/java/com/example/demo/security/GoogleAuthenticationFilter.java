@@ -2,8 +2,8 @@ package com.example.demo.security;
 
 import com.example.demo.model.entity.Role;
 import com.example.demo.model.entity.User;
+import com.example.demo.other.GoogleTokenInfo;
 import com.example.demo.service.AuthService;
-import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,27 +23,28 @@ import java.util.List;
  *
  * @author diegotobalina
  */
-@Slf4j public class AuthenticationFilter extends OncePerRequestFilter {
+@Slf4j public class GoogleAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthService authService;
 
-    public AuthenticationFilter(AuthService authService) {
+    public GoogleAuthenticationFilter(AuthService authService) {
         this.authService = authService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws ServletException, IOException {
-        log.debug("{doFilterInternal start}");
+        log.debug("{google doFilterInternal start}");
         String token = request.getHeader("Authorization");
         if (token == null || token.isEmpty()) {
-            log.debug("{doFilterInternal end} no token");
+            log.debug("{google doFilterInternal end} no token");
             chain.doFilter(request, response);
             return;
         }
         token = token.replace("Bearer ", "");
         try {
-            User user = authService.validateJwt(token);
+            GoogleTokenInfo googleInfo = this.authService.getGoogleInfo(token);
+            User user = this.authService.googleLogin(googleInfo);
             List<SimpleGrantedAuthority> simpleGrantedAuthorities =
                 this.getSimpleGrantedAuthorities(user.getRoles());
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
@@ -51,14 +52,15 @@ import java.util.List;
                     simpleGrantedAuthorities);
             SecurityContextHolder.getContext()
                 .setAuthentication(usernamePasswordAuthenticationToken);
-            log.debug("{doFilterInternal end} authentication ok");
+            log.debug("{google doFilterInternal end} authentication ok");
         } catch (Exception ex) {
-            log.warn("{doFilterInternal end} " + ex.getMessage());
+            log.warn("{google doFilterInternal end} " + ex.getMessage());
         } finally {
             chain.doFilter(request, response);
         }
 
     }
+
 
     private List<SimpleGrantedAuthority> getSimpleGrantedAuthorities(List<Role> roles) {
         List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
@@ -67,5 +69,4 @@ import java.util.List;
         }
         return simpleGrantedAuthorities;
     }
-
 }

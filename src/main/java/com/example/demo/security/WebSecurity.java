@@ -55,6 +55,8 @@ import javax.servlet.http.HttpServletResponse;
             authenticated().
             and().
             addFilterBefore(new AuthenticationFilter(authService),
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new GoogleAuthenticationFilter(authService),
                 UsernamePasswordAuthenticationFilter.class);
         log.debug("{configure end}");
 

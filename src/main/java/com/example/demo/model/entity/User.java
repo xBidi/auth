@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
@@ -26,21 +28,29 @@ import java.util.regex.Pattern;
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     @Column(unique = true) private String username;
+    @Column(unique = true) private String email;
     @Convert(converter = AttributeEncryptor.class) private String password;
-    @OneToMany(cascade = CascadeType.ALL) private List<Token> tokens = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.DETACH) private List<Role> roles = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.DETACH) private List<Scope> scopes = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Token> tokens = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Role> roles = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Scope> scopes = new ArrayList<>();
 
-    public User(String username, String password, List<Role> roles, List<Scope> scopes) {
+    public User(String username, String email, String password, List<Role> roles,
+        List<Scope> scopes) {
         this.username = username;
+        this.email = email;
         this.password = password;
         this.roles = roles;
         this.scopes = scopes;
     }
 
-    public User(String id, String username, String password, List<Role> roles, List<Scope> scopes) {
+    public User(String id, String username, String email, String password, List<Role> roles,
+        List<Scope> scopes) {
         this.id = id;
         this.username = username;
+        this.email = email;
         this.password = password;
         this.roles = roles;
         this.scopes = scopes;
