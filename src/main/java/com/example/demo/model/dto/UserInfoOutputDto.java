@@ -5,7 +5,9 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author diegotobalina
+ */
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter @ToString public class UserInfoOutputDto {
     @ApiModelProperty(example = "4b4beaba-42d3-4284-bf7c-4a00100bc828") private String userId;
     @ApiModelProperty(example = "user") private String username;
