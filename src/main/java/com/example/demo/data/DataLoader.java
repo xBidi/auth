@@ -38,6 +38,10 @@ import java.util.List;
         Scope createScope = new Scope("create", "create scope", "CREATE");
         Scope modifyScope = new Scope("modify", "modify scope", "MODIFY");
         Scope deleteScope = new Scope("delete", "delete scope", "DELETE");
+        Scope readUserScope = new Scope("read_user", "read user scope", "READ_USER");
+        Scope createUserScope = new Scope("create_user", "create user scope", "CREATE_USER");
+        Scope modifyUserScope = new Scope("modify_user", "modify user scope", "MODIFY_USER");
+        Scope deleteUserScope = new Scope("delete_user", "delete user scope", "DELETE_USER");
         roleRepository.save(roleUser);
         log.debug("{role saved} (role):" + roleUser.toString());
         roleRepository.save(roleAdmin);
@@ -50,6 +54,15 @@ import java.util.List;
         log.debug("{scope saved} (scope):" + modifyScope.toString());
         scopeRepository.save(deleteScope);
         log.debug("{scope saved} (scope):" + deleteScope.toString());
+
+        scopeRepository.save(readUserScope);
+        log.debug("{scope saved} (scope):" + readUserScope.toString());
+        scopeRepository.save(createUserScope);
+        log.debug("{scope saved} (scope):" + createUserScope.toString());
+        scopeRepository.save(modifyUserScope);
+        log.debug("{scope saved} (scope):" + modifyUserScope.toString());
+        scopeRepository.save(deleteUserScope);
+        log.debug("{scope saved} (scope):" + deleteUserScope.toString());
 
         List<Role> rolesAdmin = new ArrayList<>();
         rolesAdmin.add(roleUser);
@@ -65,7 +78,11 @@ import java.util.List;
         List<Role> rolesUser = new ArrayList<>();
         rolesUser.add(roleUser);
         List<Scope> scopesUser = new ArrayList<>();
-        scopesUser.add(readScope);
+        scopesUser.add(readUserScope);
+        scopesUser.add(modifyUserScope);
+        scopesUser.add(deleteUserScope);
+        scopesUser.add(createUserScope);
+
 
         User userUser = new User("user", "user@user.com", "password", rolesUser, scopesUser);
 
