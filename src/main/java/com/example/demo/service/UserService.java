@@ -112,10 +112,10 @@ import java.util.Optional;
             return optionalUser.get();
         }
         user.getRoles().add(roleService.findByValue("ROLE_USER"));
-        user.getScopes().add(scopeService.findByValue("READ"));
-        user.getScopes().add(scopeService.findByValue("CREATE"));
-        user.getScopes().add(scopeService.findByValue("MODIFY"));
-        user.getScopes().add(scopeService.findByValue("DELETE"));
+        user.getScopes().add(scopeService.findByValue("READ_USER"));
+        user.getScopes().add(scopeService.findByValue("CREATE_USER"));
+        user.getScopes().add(scopeService.findByValue("MODIFY_USER"));
+        user.getScopes().add(scopeService.findByValue("DELETE_USER"));
         User savedUser = this.userRepository.save(user);
         log.debug("{createIfNotExistByEmail end} saved user: " + savedUser.toString());
         return savedUser;

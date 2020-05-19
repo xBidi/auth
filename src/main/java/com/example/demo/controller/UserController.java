@@ -43,7 +43,7 @@ import java.util.List;
     @ApiOperation(value = "list all database users", notes = "ONLY ADMINS WITH READ+ SCOPE")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
-    @GetMapping @PreAuthorize("hasRole('ADMIN') and hasPermission('hasAccess','READ_USERS')")
+    @GetMapping @PreAuthorize("hasRole('ADMIN') and hasPermission('hasAccess','READ')")
     public List<UserInfoOutputDto> users() {
         log.debug("{start users}");
         List<UserInfoOutputDto> userInfoOutputDtos = userService.findAll();
