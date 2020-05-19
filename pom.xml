@@ -21,8 +21,9 @@
         <sonar.organization>xbidi</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <junit-jupiter.version>5.3.2</junit-jupiter.version>
-    </properties>
+        <spring-cloud.version>Hoxton.SR4</spring-cloud.version>
 
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -121,6 +122,18 @@
         </dependency>
 
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
