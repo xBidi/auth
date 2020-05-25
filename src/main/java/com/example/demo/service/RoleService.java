@@ -17,14 +17,11 @@ import java.util.Optional;
 
     @Autowired RoleRepository roleRepository;
 
-    public Role findByValue(String value) throws Exception {
-        log.debug("{findByValue start}");
+    public Role findByValue(String value) {
         Optional<Role> optionalRole = this.roleRepository.findByValue(value);
         if (!optionalRole.isPresent()) {
-            log.debug("{findByValue end} invalid role value: " + value);
-            throw new Exception("Invalid role value: " + value);
+            return null;
         }
-        log.debug("{findByValue end}");
         return optionalRole.get();
     }
 }

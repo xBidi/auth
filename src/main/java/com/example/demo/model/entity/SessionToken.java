@@ -7,10 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 
@@ -19,7 +16,8 @@ import java.sql.Timestamp;
  *
  * @author diegotobalina
  */
-@Entity @NoArgsConstructor @Getter @Setter @ToString public class Token {
+@Entity @NoArgsConstructor @Getter @Setter @ToString @Table(name = "spring_session_token")
+public class SessionToken {
 
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
@@ -27,7 +25,7 @@ import java.sql.Timestamp;
     private Timestamp expeditionDate;
     private Timestamp expirationDate;
 
-    public Token(String token, Timestamp expeditionDate, Timestamp expirationDate) {
+    public SessionToken(String token, Timestamp expeditionDate, Timestamp expirationDate) {
         this.token = token;
         this.expeditionDate = expeditionDate;
         this.expirationDate = expirationDate;

@@ -5,17 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Scope entity
  *
  * @author diegotobalina
  */
-@Entity @Getter @NoArgsConstructor @ToString public class Scope {
+@Entity @Getter @NoArgsConstructor @ToString @Table(name = "spring_scope") public class Scope {
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     private String name;

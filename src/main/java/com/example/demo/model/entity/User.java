@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
     @Column(unique = true) private String email;
     @Convert(converter = AttributeEncryptor.class) private String password;
     @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Token> tokens = new ArrayList<>();
+    private List<SessionToken> sessionTokens = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
     private List<Role> roles = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)

@@ -34,10 +34,7 @@ import java.util.List;
     @ResponseStatus(HttpStatus.CREATED) @PostMapping
     public RegisterOutputDto register(@RequestBody @Valid RegisterInputDto registerInputDto)
         throws Exception {
-        log.debug("{start register} (registerInputDto):" + registerInputDto.toString());
-        RegisterOutputDto registerOutputDto = this.userService.register(registerInputDto);
-        log.debug("{end register} (registerOutputDto):" + registerOutputDto.toString());
-        return registerOutputDto;
+        return this.userService.register(registerInputDto);
     }
 
     @ApiOperation(value = "list all database users", notes = "ONLY ADMINS WITH READ+ SCOPE")
@@ -45,28 +42,19 @@ import java.util.List;
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
     @GetMapping @PreAuthorize("hasRole('ADMIN') and hasPermission('hasAccess','READ')")
     public List<UserInfoOutputDto> users() {
-        log.debug("{start users}");
-        List<UserInfoOutputDto> userInfoOutputDtos = userService.findAll();
-        log.debug("{end users} (userInfoOutputDtos):" + userInfoOutputDtos.toString());
-        return userInfoOutputDtos;
+        return userService.findAll();
     }
 
     @ExceptionHandler({Exception.class}) @ResponseStatus(HttpStatus.BAD_REQUEST)
     private void exceptionHandler(HttpServletRequest request, HttpServletResponse response,
         Exception ex) throws IOException {
-        log.debug("{start exceptionHandler} (ex):" + ex.toString());
         response.sendError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        log.debug("{end exceptionHandler}");
     }
 
     @ExceptionHandler({AccessDeniedException.class}) @ResponseStatus(HttpStatus.FORBIDDEN)
     private void accessDeniedExceptionHandler(HttpServletRequest request,
         HttpServletResponse response, AccessDeniedException ex) throws IOException {
-        log.debug("{start accessDeniedExceptionHandler} (ex):" + ex.toString());
         response.sendError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
-        log.debug("{end accessDeniedExceptionHandler}");
     }
-
-
 
 }

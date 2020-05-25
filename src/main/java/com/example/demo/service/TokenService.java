@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.model.entity.Token;
-import com.example.demo.repository.TokenRepository;
+import com.example.demo.model.entity.SessionToken;
+import com.example.demo.repository.SessionTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,70 +18,51 @@ import java.util.UUID;
 @Service @Slf4j public class TokenService {
 
 
-    @Autowired TokenRepository tokenRepository;
+    @Autowired SessionTokenRepository sessionTokenRepository;
     @Autowired private UserService userService;
 
 
-    public Token generateToken() {
-        log.debug("{generateToken start}");
+    public SessionToken generateToken() {
         String randomString = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
         Timestamp expeditionDate = new Timestamp(System.currentTimeMillis());
         Timestamp expirationDate = this.getExpirationDate();
-        Token token = new Token(randomString, expeditionDate, expirationDate);
-        tokenRepository.save(token);
-        log.debug("{generateToken end}");
-        return token;
+        SessionToken sessionToken = new SessionToken(randomString, expeditionDate, expirationDate);
+        sessionTokenRepository.save(sessionToken);
+        return sessionToken;
     }
 
-    public Token findByToken(String tokenString) throws Exception {
-        log.debug("{findByToken start}");
-        Optional<Token> optionalToken = this.tokenRepository.findByToken(tokenString);
+    public SessionToken findByToken(String tokenString) {
+        Optional<SessionToken> optionalToken = this.sessionTokenRepository.findByToken(tokenString);
         if (!optionalToken.isPresent()) {
-            log.debug("{findByToken end} token not found with id: " + tokenString);
-            throw new Exception("Token not found with id: " + tokenString);
+            return null;
         }
-        Token token = optionalToken.get();
-        checkToken(token);
-        log.debug("{findByToken end}");
-        return token;
+        return optionalToken.get();
     }
 
-    public void checkToken(Token token) throws Exception {
-        log.debug("{checkToken start}");
-        if (token.getExpirationDate().getTime() < System.currentTimeMillis()) {
-            this.removeToken(token);
-            log.debug("{checkToken start} Token expired: " + token.getToken());
-            throw new Exception("Token expired: " + token.getToken());
+    public boolean isValid(SessionToken sessionToken) {
+        if (sessionToken.getExpirationDate().getTime() < System.currentTimeMillis()) {
+            return false;
         }
-        log.debug("{checkToken end}");
+        return true;
     }
 
-    public void removeToken(Token token) throws Exception {
-        log.debug("{removeToken start} (token):" + token.toString());
-        this.userService.removeToken(token.getToken());
-        this.tokenRepository.deleteById(token.getToken());
-        log.debug("{removeToken end}");
+    public void removeToken(SessionToken sessionToken) {
+        this.userService.removeSessionToken(sessionToken.getToken());
+        this.sessionTokenRepository.deleteById(sessionToken.getId());
     }
 
-    public void removeToken(String tokenString) throws Exception {
-        log.debug("{removeToken start} (tokenString):" + tokenString);
-        this.removeToken(this.findByToken(tokenString));
-        log.debug("{removeToken end}");
+    public void removeToken(String tokenString) {
+        SessionToken sessionToken = this.findByToken(tokenString);
+        this.removeToken(sessionToken);
     }
 
-
-    public void refreshToken(String tokenString) throws Exception {
-        log.debug("{refreshToken start} (tokenString):" + tokenString);
-        Token token = this.findByToken(tokenString);
-        token.setExpirationDate(this.getExpirationDate());
-        this.tokenRepository.save(token);
-        log.debug("{refreshToken end}");
+    public void refreshToken(String tokenString) {
+        SessionToken sessionToken = this.findByToken(tokenString);
+        sessionToken.setExpirationDate(this.getExpirationDate());
+        this.sessionTokenRepository.save(sessionToken);
     }
 
     private Timestamp getExpirationDate() {
-        log.debug("{getExpirationDate start}");
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000));
-        log.debug("{getExpirationDate end}");
-        return timestamp;
+        return new Timestamp(System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000));
     }
 }
