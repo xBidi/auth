@@ -47,16 +47,16 @@ import java.security.Principal;
     }
 
     @ApiOperation(value = "Token info", notes = "Returns token information, valid tokens: Bearer, Jwt")
-    @ResponseStatus(HttpStatus.OK) @PostMapping("tokenInfo")
-    public TokenInfoOutputDto tokenInfo(@RequestBody @Valid TokenInfoInputDto tokenInfoInputDto)
+    @ResponseStatus(HttpStatus.OK) @GetMapping("tokenInfo")
+    public TokenInfoOutputDto tokenInfo(@RequestParam(name = "token") String token)
         throws Exception {
-        return this.authService.tokenInfo(tokenInfoInputDto);
+        return this.authService.tokenInfo(token);
     }
 
     @ApiOperation(value = "User info", notes = "") @ResponseStatus(HttpStatus.OK)
     @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
-    @PostMapping("userInfo") public UserInfoOutputDto userInfo(Principal principal)
+    @GetMapping("userInfo") public UserInfoOutputDto userInfo(Principal principal)
         throws Exception {
         return this.authService.findByPrincipal(principal);
     }

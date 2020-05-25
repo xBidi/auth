@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletResponse;
             authorizeRequests().
             antMatchers(String.format("/%s/%s/%s/**", contextPath, apiVersion, authPath)).
             permitAll().
-            antMatchers(HttpMethod.POST,
+            antMatchers(HttpMethod.GET,
                 String.format("/%s/%s/%s/userInfo", contextPath, apiVersion, authPath)).
             authenticated().
             antMatchers(HttpMethod.PUT,
