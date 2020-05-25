@@ -48,6 +48,12 @@ import javax.servlet.http.HttpServletResponse;
             antMatchers(HttpMethod.POST,
                 String.format("/%s/%s/%s/userInfo", contextPath, apiVersion, authPath)).
             authenticated().
+            antMatchers(HttpMethod.PUT,
+                String.format("/%s/%s/%s/password/reset", contextPath, apiVersion, usersPath)).
+            permitAll().
+            antMatchers(HttpMethod.POST,
+                String.format("/%s/%s/%s/password/email", contextPath, apiVersion, usersPath)).
+            permitAll().
             antMatchers(HttpMethod.POST,
                 String.format("/%s/%s/%s", contextPath, apiVersion, usersPath)).
             permitAll().

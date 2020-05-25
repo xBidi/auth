@@ -17,14 +17,11 @@ import java.util.Optional;
 
     @Autowired ScopeRepository ScopeRepository;
 
-    public Scope findByValue(String value) throws Exception {
-        log.debug("{findByValue start}");
+    public Scope findByValue(String value) {
         Optional<Scope> optionalScope = this.ScopeRepository.findByValue(value);
         if (!optionalScope.isPresent()) {
-            log.debug("{findByValue end} invalid scope value: " + value);
-            throw new Exception("Invalid Scope value: " + value);
+            return null;
         }
-        log.debug("{findByValue end}");
         return optionalScope.get();
     }
 }

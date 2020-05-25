@@ -5,7 +5,7 @@ import com.example.demo.model.dto.RegisterOutputDto;
 import com.example.demo.model.dto.UserInfoOutputDto;
 import com.example.demo.model.entity.Role;
 import com.example.demo.model.entity.Scope;
-import com.example.demo.model.entity.Token;
+import com.example.demo.model.entity.SessionToken;
 import com.example.demo.model.entity.User;
 import com.example.demo.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,16 +92,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         String userid = "userid";
         User expectedUser = new User();
         expectedUser.setId(userid);
-        Mockito.when(userRepository.findByTokensToken(token)).thenReturn(Optional.of(expectedUser));
-        User user = this.userService.findByToken(token);
+        Mockito.when(userRepository.findBySessionTokensToken(token))
+            .thenReturn(Optional.of(expectedUser));
+        User user = this.userService.findBySessionTokensToken(token);
         assertEquals(expectedUser, user);
     }
 
     @Test public void findByTokenException() throws Exception {
         String token = "token";
-        Mockito.when(userRepository.findByTokensToken(token)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findBySessionTokensToken(token)).thenReturn(Optional.empty());
         try {
-            this.userService.findByToken(token);
+            this.userService.findBySessionTokensToken(token);
         } catch (Exception e) {
             if (e.getMessage().equals("Unknown user with token: " + token)) {
                 assertTrue(true);
@@ -150,26 +151,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
     @Test public void addTokenOk() {
         User user = new User();
-        Token token = new Token();
-        token.setId("token");
+        SessionToken sessionToken = new SessionToken();
+        sessionToken.setId("token");
         Mockito.when(userRepository.save(user)).thenReturn(user);
-        userService.addToken(user, token);
+        userService.addSessionToken(user, sessionToken);
         User expectedUser = new User();
-        expectedUser.getTokens().add(token);
-        assertEquals(expectedUser.getTokens(), user.getTokens());
+        expectedUser.getSessionTokens().add(sessionToken);
+        assertEquals(expectedUser.getSessionTokens(), user.getSessionTokens());
     }
 
     @Test public void removeTokenOk() throws Exception {
         User user = new User();
         String tokenString = "token";
-        Token token = new Token();
-        token.setToken(tokenString);
-        user.getTokens().add(token);
+        SessionToken sessionToken = new SessionToken();
+        sessionToken.setToken(tokenString);
+        user.getSessionTokens().add(sessionToken);
         Mockito.when(userRepository.save(user)).thenReturn(user);
-        Mockito.when(userRepository.findByTokensToken(tokenString)).thenReturn(Optional.of(user));
-        userService.removeToken(tokenString);
+        Mockito.when(userRepository.findBySessionTokensToken(tokenString))
+            .thenReturn(Optional.of(user));
+        userService.removeSessionToken(tokenString);
         User expectedUser = new User();
-        assertEquals(expectedUser.getTokens(), user.getTokens());
+        assertEquals(expectedUser.getSessionTokens(), user.getSessionTokens());
     }
 
     @Test public void findAllOk() throws Exception {
@@ -178,7 +180,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         users.add(new User());
         users.add(new User());
         Mockito.when(userRepository.findAll()).thenReturn(users);
-        Mockito.when(authService.getUserInfoOutputDto(Mockito.anyString()))
+        Mockito.when(authService.findByPrincipal(Mockito.any()))
             .thenReturn(new UserInfoOutputDto());
         List<UserInfoOutputDto> userInfoOutputDtos = userService.findAll();
         assertEquals(users.size(), userInfoOutputDtos.size());
@@ -190,7 +192,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         users.add(new User());
         users.add(new User());
         Mockito.when(userRepository.findAll()).thenReturn(users);
-        Mockito.when(authService.getUserInfoOutputDto(Mockito.any()))
+        Mockito.when(authService.findByPrincipal(Mockito.any()))
             .thenThrow(new Exception("this.authService.getUserInfoOutputDto(user.getId()"));
         List<UserInfoOutputDto> userInfoOutputDtos = userService.findAll();
         assertEquals(0, userInfoOutputDtos.size());
