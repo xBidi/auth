@@ -215,7 +215,8 @@ import java.util.regex.Pattern;
             }
         });
         log.debug("{getUserInfoOutputDto end}");
-        return new UserInfoOutputDto(user.getId(), user.getUsername(), roles, scopes, sessions);
+        return new UserInfoOutputDto(user.getId(), user.getUsername(), user.getEmail(), roles,
+            scopes, sessions);
     }
 
     private NetHttpTransport transport;

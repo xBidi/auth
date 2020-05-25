@@ -1,5 +1,6 @@
 package com.example.demo.model.entity;
 
+import com.example.demo.model.auditor.Auditable;
 import com.example.demo.security.AttributeEncryptor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
  * @author diegotobalina
  */
 @Entity @Getter @Setter @NoArgsConstructor @EntityListeners(UserListener.class)
-@Table(name = "spring_user") @ToString public class User {
+@Table(name = "spring_user") @ToString public class User extends Auditable<String> {
 
     @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
