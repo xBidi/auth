@@ -109,15 +109,14 @@ import java.util.stream.Collectors;
             mapper.convertValue(claims.get("scopes"), new TypeReference<List<Scope>>() {
             });
         String userString = (String) claims.get("user");
-        return new User(userString,"", "", "", false, roles, scopes);
+        return new User(userString, "", "", "", false, roles, scopes);
     }
 
     private Claims validateToken(String token) {
         return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token).getBody();
     }
 
-    public TokenInfoOutputDto tokenInfo(TokenInfoInputDto tokenInfoInputDto) throws Exception {
-        String tokenString = tokenInfoInputDto.getToken();
+    public TokenInfoOutputDto tokenInfo(String tokenString) throws Exception {
         tokenString = tokenString.replace("Bearer ", "");
         String regex = "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$";
         Pattern p = Pattern.compile(regex);
