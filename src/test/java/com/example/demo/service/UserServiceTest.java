@@ -3,10 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.dto.RegisterInputDto;
 import com.example.demo.model.dto.RegisterOutputDto;
 import com.example.demo.model.dto.UserInfoOutputDto;
-import com.example.demo.model.entity.Role;
-import com.example.demo.model.entity.Scope;
-import com.example.demo.model.entity.SessionToken;
-import com.example.demo.model.entity.User;
+import com.example.demo.model.entity.*;
 import com.example.demo.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +12,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.javamail.JavaMailSender;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     @Mock private RoleService roleService;
     @Mock private ScopeService scopeService;
     @Mock private AuthService authService;
-
+    @Mock private VerifyEmailTokenService verifyEmailTokenService;
+    @Mock private MailService mailService;
 
     @BeforeEach public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -125,6 +126,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         Mockito.when(roleService.findByValue(Mockito.anyString())).thenReturn(new Role());
         Mockito.when(scopeService.findByValue(Mockito.anyString())).thenReturn(new Scope());
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(createdUser);
+        Mockito.when(verifyEmailTokenService.generateToken()).thenReturn(new VerifyEmailToken());
+        Mockito.doNothing().when(Mockito.spy(mailService))
+            .mailNewUser(Mockito.anyString(), Mockito.anyString());
         RegisterOutputDto registerOutputDto = userService.register(registerInputDto);
         assertEquals(createdUser.getId(), registerOutputDto.getUserId());
         assertEquals(createdUser.getUsername(), registerOutputDto.getUsername());
@@ -138,10 +142,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         RegisterInputDto registerInputDto = new RegisterInputDto(username, email, password);
         Mockito.when(userRepository.findByUsername(Mockito.anyString()))
             .thenReturn(Optional.of(new User()));
+        Mockito.when(userRepository.findByEmail(Mockito.anyString()))
+            .thenReturn(Optional.of(new User()));
         try {
             this.userService.register(registerInputDto);
         } catch (Exception e) {
-            if (e.getMessage().equals("There is already an account with username: " + username)) {
+            if (e.getMessage().equals(
+                "[There is already an account with username: username, There is already an account with email: username@email.com]")) {
                 assertTrue(true);
             } else {
                 throw e;
@@ -195,7 +202,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         Mockito.when(authService.findByPrincipal(Mockito.any()))
             .thenThrow(new Exception("this.authService.getUserInfoOutputDto(user.getId()"));
         List<UserInfoOutputDto> userInfoOutputDtos = userService.findAll();
-        assertEquals(0, userInfoOutputDtos.size());
+        assertEquals(3, userInfoOutputDtos.size());
     }
 
 
