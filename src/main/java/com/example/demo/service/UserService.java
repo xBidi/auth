@@ -79,6 +79,9 @@ import java.util.stream.Collectors;
             throw new Exception(errors.toString());
         }
         user = userRepository.saveAndFlush(user);
+        VerifyEmailToken verifyEmailToken = verifyEmailTokenService.generateToken();
+        addVerifyEmailToken(user, verifyEmailToken);
+        mailService.mailNewUser(user.getEmail(), verifyEmailToken.getToken());
         return user;
     }
 
