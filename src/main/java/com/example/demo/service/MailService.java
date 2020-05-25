@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
         String template = readTemplate("resetPasswordEmail.html");
         String enlace = "http://localhost:8080/api/v1/users/password/reset?token=" + token;
         template = template.replace("*|ENLACE|*", enlace);
-        sendEmail(destinatario,"Reset contraseña", template);
+        sendEmail(destinatario, "Reset contraseña", template);
     }
 
     public void mailVerifyEmail(String destinatario, String token)
@@ -29,10 +29,19 @@ import java.io.InputStreamReader;
         String template = readTemplate("verifyEmailEmail.html");
         String enlace = "http://localhost:8080/api/v1/users/email/verify?token=" + token;
         template = template.replace("*|ENLACE|*", enlace);
-        sendEmail(destinatario,"Verificar correo", template);
+        sendEmail(destinatario, "Verificar correo", template);
     }
 
-    private void sendEmail(String destinatario,String subject, String template) throws MessagingException {
+    public void mailNewUser(String destinatario, String token)
+        throws IOException, MessagingException {
+        String template = readTemplate("newUser.html");
+        String enlace = "http://localhost:8080/api/v1/users/email/verify?token=" + token;
+        template = template.replace("*|ENLACE|*", enlace);
+        sendEmail(destinatario, "Bienvenido", template);
+    }
+
+    private void sendEmail(String destinatario, String subject, String template)
+        throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         message.setSubject(subject);
         MimeMessageHelper helper;
