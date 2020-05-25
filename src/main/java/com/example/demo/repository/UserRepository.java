@@ -17,4 +17,7 @@ import java.util.Optional;
     Optional<User> findByEmail(String email);
 
     Optional<User> findBySessionTokensToken(String token);
+
+    Optional<User> findByResetPasswordTokensToken(String token);
+
 }

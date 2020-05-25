@@ -1,16 +1,19 @@
 package com.example.demo.service;
 
-import com.example.demo.model.dto.RegisterInputDto;
-import com.example.demo.model.dto.RegisterOutputDto;
-import com.example.demo.model.dto.TokenDto;
-import com.example.demo.model.dto.UserInfoOutputDto;
+import com.example.demo.model.dto.*;
+import com.example.demo.model.entity.ResetPasswordToken;
 import com.example.demo.model.entity.SessionToken;
 import com.example.demo.model.entity.User;
 import com.example.demo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +27,11 @@ import java.util.stream.Collectors;
 @Service @Slf4j public class UserService {
 
     @Autowired UserRepository userRepository;
-    @Autowired TokenService tokenService;
+    @Autowired SessionTokenService sessionTokenService;
     @Autowired RoleService roleService;
     @Autowired ScopeService scopeService;
     @Autowired AuthService authService;
+    @Autowired ResetPasswordTokenService resetPasswordTokenService;
 
     public User findByUsernameOrEmail(String username, String email) {
         if (username != null && !username.isEmpty()) {
@@ -91,6 +95,11 @@ import java.util.stream.Collectors;
         this.userRepository.saveAndFlush(user);
     }
 
+    public void addResetPasswordToken(User user, ResetPasswordToken resetPasswordToken) {
+        user.getResetPasswordTokens().add(resetPasswordToken);
+        this.userRepository.saveAndFlush(user);
+    }
+
     public void removeSessionToken(String tokenString) {
         User user = this.findBySessionTokensToken(tokenString);
         user.getSessionTokens().removeIf(token -> token.getToken().equals(tokenString));
@@ -112,8 +121,8 @@ import java.util.stream.Collectors;
         List<String> scopes =
             user.getScopes().stream().map(scope -> scope.getValue()).collect(Collectors.toList());
         for (SessionToken sessionToken : user.getSessionTokens()) {
-            if (!tokenService.isValid(sessionToken)) {
-                tokenService.removeToken(sessionToken);
+            if (!sessionTokenService.isValid(sessionToken)) {
+                sessionTokenService.removeToken(sessionToken);
             }
         }
         List<TokenDto> sessions = user.getSessionTokens().stream().map(
@@ -155,5 +164,62 @@ import java.util.stream.Collectors;
             return null;
         }
         return optionalUser.get();
+    }
+
+    public User findByResetPasswordTokensToken(String token) {
+        Optional<User> optionalUser = this.userRepository.findByResetPasswordTokensToken(token);
+        if (!optionalUser.isPresent()) {
+            return null;
+        }
+        return optionalUser.get();
+    }
+
+    public void removeResetPasswordToken(String tokenString) {
+        User user = this.findByResetPasswordTokensToken(tokenString);
+        user.getResetPasswordTokens().removeIf(token -> token.getToken().equals(tokenString));
+        this.userRepository.saveAndFlush(user);
+    }
+
+    public void updatePassword(Principal principal, UpdateUserPasswordDto updateUserPasswordDto)
+        throws Exception {
+        String loggedUserId = authService.findByPrincipal(principal).getUserId();
+        User user = findById(loggedUserId);
+        String newPassword = updateUserPasswordDto.getNewPassword();
+        String oldPassword = updateUserPasswordDto.getOldPassword();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (encoder.matches(oldPassword, user.getPassword())) {
+            user.setPassword(newPassword);
+            userRepository.saveAndFlush(user);
+        }
+    }
+
+    @Autowired private MailService mailService;
+
+    public void sendResetPasswordEmail(SendResetPasswordEmailDto sendResetPasswordEmailDto)
+        throws IOException, MessagingException {
+        String email = sendResetPasswordEmailDto.getEmail();
+        User user = findByEmail(email);
+        if (user == null) {
+            return; // invalid user
+        }
+        ResetPasswordToken resetPasswordToken = resetPasswordTokenService.generateToken();
+        addResetPasswordToken(user, resetPasswordToken);
+        mailService.mailResetPassword(email, resetPasswordToken.getToken());
+    }
+
+    public void resetPasswordWithEmail(ResetPasswordWithEmailDto resetPasswordWithEmailDto) {
+        String token = resetPasswordWithEmailDto.getToken();
+        ResetPasswordToken resetPasswordToken = resetPasswordTokenService.findByToken(token);
+        if (resetPasswordToken == null) {
+            return;
+        }
+        if (!resetPasswordTokenService.isValid(resetPasswordToken)) {
+            resetPasswordTokenService.removeToken(resetPasswordToken);
+            return;
+        }
+        User user = findByResetPasswordTokensToken(token);
+        user.setPassword(resetPasswordWithEmailDto.getNewPassword());
+        userRepository.saveAndFlush(user);
+        resetPasswordTokenService.removeToken(resetPasswordToken);
     }
 }

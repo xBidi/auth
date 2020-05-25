@@ -15,7 +15,7 @@ import java.util.UUID;
  *
  * @author diegotobalina
  */
-@Service @Slf4j public class TokenService {
+@Service @Slf4j public class SessionTokenService {
 
 
     @Autowired SessionTokenRepository sessionTokenRepository;
@@ -26,7 +26,8 @@ import java.util.UUID;
         String randomString = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
         Timestamp expeditionDate = new Timestamp(System.currentTimeMillis());
         Timestamp expirationDate = this.getExpirationDate();
-        SessionToken sessionToken = new SessionToken(randomString, expeditionDate, expirationDate);
+        SessionToken
+            sessionToken = new SessionToken(randomString, expeditionDate, expirationDate);
         sessionTokenRepository.save(sessionToken);
         return sessionToken;
     }

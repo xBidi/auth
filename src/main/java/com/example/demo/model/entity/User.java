@@ -33,6 +33,8 @@ import java.util.regex.Pattern;
     @Convert(converter = AttributeEncryptor.class) private String password;
     @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
     private List<SessionToken> sessionTokens = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
+    private List<ResetPasswordToken> resetPasswordTokens = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
     private List<Role> roles = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)

@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.RegisterInputDto;
-import com.example.demo.model.dto.RegisterOutputDto;
-import com.example.demo.model.dto.UserInfoOutputDto;
+import com.example.demo.model.dto.*;
 import com.example.demo.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -18,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -35,6 +34,29 @@ import java.util.List;
     public RegisterOutputDto register(@RequestBody @Valid RegisterInputDto registerInputDto)
         throws Exception {
         return this.userService.register(registerInputDto);
+    }
+
+    @ApiOperation(value = "Update user password", notes = "") @ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
+    @PreAuthorize("hasRole('USER') and hasPermission('hasAccess','MODIFY_USER')")
+    @PutMapping("password") @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updatePassword(Principal principal,
+        @RequestBody @Valid UpdateUserPasswordDto updateUserPasswordDto) throws Exception {
+        this.userService.updatePassword(principal, updateUserPasswordDto);
+    }
+
+    @ApiOperation(value = "recupera la contraseña usando el token recibido por correo", notes = "")
+    @PutMapping("password/reset") @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetPasswordWithEmail(
+        @RequestBody @Valid ResetPasswordWithEmailDto resetPasswordWithEmailDto) throws Exception {
+        this.userService.resetPasswordWithEmail(resetPasswordWithEmailDto);
+    }
+
+    @ApiOperation(value = "envia un correo para recuperar la contraseña", notes = "")
+    @PostMapping("password/email") @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void sendResetPasswordEmail(
+        @RequestBody @Valid SendResetPasswordEmailDto sendResetPasswordEmailDto) throws Exception {
+        this.userService.sendResetPasswordEmail(sendResetPasswordEmailDto);
     }
 
     @ApiOperation(value = "list all database users", notes = "ONLY ADMINS WITH READ+ SCOPE")

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Service @Slf4j public class AuthService {
 
     @Autowired UserService userService;
-    @Autowired TokenService tokenService;
+    @Autowired SessionTokenService sessionTokenService;
     @Value("${server.auth.secret-key}") private String secretKey;
     @Value("${google.oauth2.CLIENT_ID}") private String googleClientId;
 
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
         if (!encoder.matches(inputPassword, userPasswordHash)) {
             throw new Exception("invalid password");
         }
-        SessionToken sessionToken = this.tokenService.generateToken();
+        SessionToken sessionToken = this.sessionTokenService.generateToken();
         userService.addSessionToken(user, sessionToken);
         return new LoginOutputDto(sessionToken.getToken(),
             sessionToken.getExpeditionDate().toString(),
@@ -66,11 +66,15 @@ import java.util.stream.Collectors;
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public AccessOutputDto access(AccessInputDto accessInputDto) {
+    public AccessOutputDto access(AccessInputDto accessInputDto) throws Exception {
         String tokenString = accessInputDto.getToken();
         tokenString = tokenString.replace("Bearer ", "");
-        tokenService.findByToken(tokenString);
-        tokenService.refreshToken(tokenString);
+        SessionToken sessionToken = sessionTokenService.findByToken(tokenString);
+        if (!sessionTokenService.isValid(sessionToken)) {
+            sessionTokenService.removeToken(sessionToken);
+            throw new Exception("invalid token");
+        }
+        sessionTokenService.refreshToken(tokenString);
         User user = userService.findBySessionTokensToken(tokenString);
         String username = user.getUsername();
         long currentTimeMillis = System.currentTimeMillis();
@@ -90,7 +94,7 @@ import java.util.stream.Collectors;
     public void logout(LogoutInputDto logoutInputDto) {
         String token = logoutInputDto.getToken();
         token = token.replace("Bearer ", "");
-        this.tokenService.removeToken(token);
+        sessionTokenService.removeToken(token);
     }
 
 
@@ -180,7 +184,7 @@ import java.util.stream.Collectors;
 
     private TokenInfoOutputDto getSessionTokenInfo(String tokenString) {
         User user = userService.findBySessionTokensToken(tokenString);
-        SessionToken sessionToken = tokenService.findByToken(tokenString);
+        SessionToken sessionToken = sessionTokenService.findByToken(tokenString);
         return new TokenInfoOutputDto(tokenString, sessionToken.getExpeditionDate().toString(),
             sessionToken.getExpirationDate().toString(), user.getId());
     }
@@ -189,7 +193,8 @@ import java.util.stream.Collectors;
         UsernamePasswordAuthenticationToken authenticationToken =
             (UsernamePasswordAuthenticationToken) principal;
         User tempUser = (User) authenticationToken.getPrincipal();
-        UserInfoOutputDto userInfoOutputDto = userService.userToUserInfoOutputDto(tempUser);
+        User user = userService.findById(tempUser.getId());
+        UserInfoOutputDto userInfoOutputDto = userService.userToUserInfoOutputDto(user);
         return userInfoOutputDto;
     }
 
