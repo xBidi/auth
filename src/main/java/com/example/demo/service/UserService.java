@@ -78,7 +78,7 @@ import java.util.stream.Collectors;
         if (!errors.isEmpty()) {
             throw new Exception(errors.toString());
         }
-        user = userRepository.saveAndFlush(user);
+        user = userRepository.save(user);
         VerifyEmailToken verifyEmailToken = verifyEmailTokenService.generateToken();
         addVerifyEmailToken(user, verifyEmailToken);
         mailService.mailNewUser(user.getEmail(), verifyEmailToken.getToken());
@@ -98,23 +98,23 @@ import java.util.stream.Collectors;
 
     public void addSessionToken(User user, SessionToken sessionToken) {
         user.getSessionTokens().add(sessionToken);
-        this.userRepository.saveAndFlush(user);
+        this.userRepository.save(user);
     }
 
     public void addResetPasswordToken(User user, ResetPasswordToken resetPasswordToken) {
         user.getResetPasswordTokens().add(resetPasswordToken);
-        this.userRepository.saveAndFlush(user);
+        this.userRepository.save(user);
     }
 
     public void addVerifyEmailToken(User user, VerifyEmailToken verifyEmailToken) {
         user.getVerifyEmailTokens().add(verifyEmailToken);
-        this.userRepository.saveAndFlush(user);
+        this.userRepository.save(user);
     }
 
     public void removeSessionToken(String tokenString) {
         User user = this.findBySessionTokensToken(tokenString);
         user.getSessionTokens().removeIf(token -> token.getToken().equals(tokenString));
-        this.userRepository.saveAndFlush(user);
+        this.userRepository.save(user);
     }
 
     public List<UserInfoOutputDto> findAll() {
@@ -196,7 +196,7 @@ import java.util.stream.Collectors;
     public void removeResetPasswordToken(String tokenString) {
         User user = this.findByResetPasswordTokensToken(tokenString);
         user.getResetPasswordTokens().removeIf(token -> token.getToken().equals(tokenString));
-        this.userRepository.saveAndFlush(user);
+        this.userRepository.save(user);
     }
 
     public void updatePassword(Principal principal, UpdateUserPasswordDto updateUserPasswordDto)
@@ -208,7 +208,7 @@ import java.util.stream.Collectors;
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (encoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(newPassword);
-            userRepository.saveAndFlush(user);
+            userRepository.save(user);
         }
     }
 
@@ -238,14 +238,14 @@ import java.util.stream.Collectors;
         }
         User user = findByResetPasswordTokensToken(token);
         user.setPassword(resetPasswordWithEmailDto.getNewPassword());
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
         resetPasswordTokenService.removeToken(resetPasswordToken);
     }
 
     public void removeVerifyEmailToken(String tokenString) {
         User user = this.findByVerifyEmailTokensToken(tokenString);
         user.getVerifyEmailTokens().removeIf(token -> token.getToken().equals(tokenString));
-        this.userRepository.saveAndFlush(user);
+        this.userRepository.save(user);
     }
 
     public void sendVerifyEmailEmail(Principal principal) throws Exception {
@@ -272,7 +272,7 @@ import java.util.stream.Collectors;
         }
         User user = findByVerifyEmailTokensToken(token);
         user.setEmailVerified(true);
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
         verifyEmailTokenService.removeToken(verifyEmailToken);
     }
 }
