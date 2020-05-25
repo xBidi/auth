@@ -18,25 +18,36 @@ import java.io.InputStreamReader;
 
     public void mailResetPassword(String destinatario, String token)
         throws IOException, MessagingException {
-
-        String template = readTemplate();
-
+        String template = readTemplate("resetPasswordEmail.html");
         String enlace = "http://localhost:8080/api/v1/users/password/reset?token=" + token;
         template = template.replace("*|ENLACE|*", enlace);
+        sendEmail(destinatario,"Reset contraseña", template);
+    }
 
+    public void mailVerifyEmail(String destinatario, String token)
+        throws IOException, MessagingException {
+        String template = readTemplate("verifyEmailEmail.html");
+        String enlace = "http://localhost:8080/api/v1/users/email/verify?token=" + token;
+        template = template.replace("*|ENLACE|*", enlace);
+        sendEmail(destinatario,"Verificar correo", template);
+    }
+
+    private void sendEmail(String destinatario,String subject, String template) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
-        message.setSubject("Reset contraseña");
+        message.setSubject(subject);
         MimeMessageHelper helper;
         helper = new MimeMessageHelper(message, true);
-        helper.setFrom("helpcoronavirus19@gmail.com");
+        helper.setFrom("dws@gmail.com");
         helper.setTo(destinatario);
         helper.setText(template, true);
         javaMailSender.send(message);
     }
 
-    private String readTemplate() throws IOException {
+
+
+    private String readTemplate(String file) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream("resetPasswordEmail.html");
+        InputStream inputStream = classLoader.getResourceAsStream(file);
         return readFromInputStream(inputStream);
     }
 
@@ -50,4 +61,6 @@ import java.io.InputStreamReader;
         }
         return resultStringBuilder.toString();
     }
+
+
 }

@@ -30,7 +30,7 @@ import java.util.List;
     @Autowired UserService userService;
 
     @ApiOperation(value = "Register a new user in the database", notes = "")
-    @ResponseStatus(HttpStatus.CREATED) @PostMapping
+    @ResponseStatus(HttpStatus.CREATED) @PostMapping("register")
     public RegisterOutputDto register(@RequestBody @Valid RegisterInputDto registerInputDto)
         throws Exception {
         return this.userService.register(registerInputDto);
@@ -57,6 +57,19 @@ import java.util.List;
     public void sendResetPasswordEmail(
         @RequestBody @Valid SendResetPasswordEmailDto sendResetPasswordEmailDto) throws Exception {
         this.userService.sendResetPasswordEmail(sendResetPasswordEmailDto);
+    }
+
+    @ApiOperation(value = "envia un correo para verificar el email", notes = "")
+    @PostMapping("email") @ResponseStatus(HttpStatus.NO_CONTENT) @ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
+    public void sendVerifyEmailEmail(Principal principal) throws Exception {
+        this.userService.sendVerifyEmailEmail(principal);
+    }
+
+    @ApiOperation(value = "verifica el correo electronico", notes = "") @PostMapping("email/verify")
+    @ResponseStatus(HttpStatus.NO_CONTENT) public void sendVerifyEmailEmail(@Valid @RequestBody VerifyEmailDto verifyEmailDto)
+        throws Exception {
+        this.userService.verifyEmail(verifyEmailDto);
     }
 
     @ApiOperation(value = "list all database users", notes = "ONLY ADMINS WITH READ+ SCOPE")
