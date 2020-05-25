@@ -20,4 +20,6 @@ import java.util.Optional;
 
     Optional<User> findByResetPasswordTokensToken(String token);
 
+    Optional<User> findByVerifyEmailTokensToken(String token);
+
 }

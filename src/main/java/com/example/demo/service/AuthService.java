@@ -109,7 +109,7 @@ import java.util.stream.Collectors;
             mapper.convertValue(claims.get("scopes"), new TypeReference<List<Scope>>() {
             });
         String userString = (String) claims.get("user");
-        return new User(userString, "", "", "", roles, scopes);
+        return new User(userString,"", "", "", false, roles, scopes);
     }
 
     private Claims validateToken(String token) {
@@ -226,11 +226,13 @@ import java.util.stream.Collectors;
         String email = payload.getEmail();
         String username = email.split("@")[0] + UUID.randomUUID().toString().substring(0, 4);
         String randomPassword = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
+        Boolean emailVerified = payload.getEmailVerified();
         if (userService.findByEmail(email) != null) {
             return userService.findByEmail(email);
         }
         User user =
-            new User(null, username, email, randomPassword, new ArrayList<>(), new ArrayList<>());
+            new User(null, username, email, randomPassword, emailVerified, new ArrayList<>(),
+                new ArrayList<>());
         return userService.createUser(user);
     }
 }

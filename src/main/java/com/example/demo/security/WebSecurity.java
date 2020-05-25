@@ -55,7 +55,10 @@ import javax.servlet.http.HttpServletResponse;
                 String.format("/%s/%s/%s/password/email", contextPath, apiVersion, usersPath)).
             permitAll().
             antMatchers(HttpMethod.POST,
-                String.format("/%s/%s/%s", contextPath, apiVersion, usersPath)).
+                String.format("/%s/%s/%s/email/verify", contextPath, apiVersion, usersPath)).
+            permitAll().
+            antMatchers(HttpMethod.POST,
+                String.format("/%s/%s/%s/register", contextPath, apiVersion, usersPath)).
             permitAll().
             anyRequest().
             authenticated().

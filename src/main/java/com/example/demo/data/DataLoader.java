@@ -73,7 +73,7 @@ import java.util.List;
         scopesAdmin.add(modifyScope);
         scopesAdmin.add(deleteScope);
 
-        User userAdmin = new User("admin", "admin@admin.com", "password", rolesAdmin, scopesAdmin);
+        User userAdmin = new User("admin", "admin@admin.com", "password",false, rolesAdmin, scopesAdmin);
 
         List<Role> rolesUser = new ArrayList<>();
         rolesUser.add(roleUser);
@@ -84,7 +84,7 @@ import java.util.List;
         scopesUser.add(createUserScope);
 
 
-        User userUser = new User("user", "user@user.com", "password", rolesUser, scopesUser);
+        User userUser = new User("user", "user@user.com", "password",false, rolesUser, scopesUser);
 
         userRepository.save(userAdmin);
         log.debug("{user saved} (user):" + userAdmin.toString());

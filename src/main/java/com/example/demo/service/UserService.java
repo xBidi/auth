@@ -4,6 +4,7 @@ import com.example.demo.model.dto.*;
 import com.example.demo.model.entity.ResetPasswordToken;
 import com.example.demo.model.entity.SessionToken;
 import com.example.demo.model.entity.User;
+import com.example.demo.model.entity.VerifyEmailToken;
 import com.example.demo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
     @Autowired ScopeService scopeService;
     @Autowired AuthService authService;
     @Autowired ResetPasswordTokenService resetPasswordTokenService;
+    @Autowired VerifyEmailTokenService verifyEmailTokenService;
 
     public User findByUsernameOrEmail(String username, String email) {
         if (username != null && !username.isEmpty()) {
@@ -47,7 +49,8 @@ import java.util.stream.Collectors;
         String username = registerInputDto.getUsername();
         String email = registerInputDto.getEmail();
         String password = registerInputDto.getPassword();
-        User user = new User(username, email, password, new ArrayList<>(), new ArrayList<>());
+        User user =
+            new User(username, email, password, false, new ArrayList<>(), new ArrayList<>());
         User createdUser = createUser(user);
         RegisterOutputDto registerOutputDto =
             new RegisterOutputDto(createdUser.getId(), createdUser.getUsername(), email);
@@ -100,6 +103,11 @@ import java.util.stream.Collectors;
         this.userRepository.saveAndFlush(user);
     }
 
+    public void addVerifyEmailToken(User user, VerifyEmailToken verifyEmailToken) {
+        user.getVerifyEmailTokens().add(verifyEmailToken);
+        this.userRepository.saveAndFlush(user);
+    }
+
     public void removeSessionToken(String tokenString) {
         User user = this.findBySessionTokensToken(tokenString);
         user.getSessionTokens().removeIf(token -> token.getToken().equals(tokenString));
@@ -129,8 +137,8 @@ import java.util.stream.Collectors;
             sessionToken -> new TokenDto(sessionToken.getToken(),
                 sessionToken.getExpeditionDate().toString(),
                 sessionToken.getExpirationDate().toString())).collect(Collectors.toList());
-        return new UserInfoOutputDto(user.getId(), user.getUsername(), user.getEmail(), roles,
-            scopes, sessions);
+        return new UserInfoOutputDto(user.getId(), user.getUsername(), user.getEmail(),
+            user.getEmailVerified(), roles, scopes, sessions);
     }
 
     public User findById(String id) {
@@ -160,6 +168,14 @@ import java.util.stream.Collectors;
 
     public User findBySessionTokensToken(String token) {
         Optional<User> optionalUser = this.userRepository.findBySessionTokensToken(token);
+        if (!optionalUser.isPresent()) {
+            return null;
+        }
+        return optionalUser.get();
+    }
+
+    public User findByVerifyEmailTokensToken(String token) {
+        Optional<User> optionalUser = this.userRepository.findByVerifyEmailTokensToken(token);
         if (!optionalUser.isPresent()) {
             return null;
         }
@@ -221,5 +237,39 @@ import java.util.stream.Collectors;
         user.setPassword(resetPasswordWithEmailDto.getNewPassword());
         userRepository.saveAndFlush(user);
         resetPasswordTokenService.removeToken(resetPasswordToken);
+    }
+
+    public void removeVerifyEmailToken(String tokenString) {
+        User user = this.findByVerifyEmailTokensToken(tokenString);
+        user.getVerifyEmailTokens().removeIf(token -> token.getToken().equals(tokenString));
+        this.userRepository.saveAndFlush(user);
+    }
+
+    public void sendVerifyEmailEmail(Principal principal) throws Exception {
+        String userId = authService.findByPrincipal(principal).getUserId();
+        User user = findById(userId);
+        if (user == null || user.getEmailVerified()) {
+            return; // invalid user
+        }
+        String email = user.getEmail();
+        VerifyEmailToken verifyEmailToken = verifyEmailTokenService.generateToken();
+        addVerifyEmailToken(user, verifyEmailToken);
+        mailService.mailVerifyEmail(email, verifyEmailToken.getToken());
+    }
+
+    public void verifyEmail(VerifyEmailDto verifyEmailDto) {
+        String token = verifyEmailDto.getToken();
+        VerifyEmailToken verifyEmailToken = verifyEmailTokenService.findByToken(token);
+        if (verifyEmailToken == null) {
+            return;
+        }
+        if (!verifyEmailTokenService.isValid(verifyEmailToken)) {
+            verifyEmailTokenService.removeToken(verifyEmailToken);
+            return;
+        }
+        User user = findByVerifyEmailTokensToken(token);
+        user.setEmailVerified(true);
+        userRepository.saveAndFlush(user);
+        verifyEmailTokenService.removeToken(verifyEmailToken);
     }
 }
