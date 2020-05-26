@@ -87,7 +87,7 @@ public class Driver {
         jsonObject.put("email", email);
         jsonObject.put("username", username);
         jsonObject.put("password", password);
-        return send("/users", null, HttpMethod.POST, jsonObject.toString());
+        return send("/users/register", null, HttpMethod.POST, jsonObject.toString());
     }
 
     private String send(String url, String token, HttpMethod httpMethod, String body) {
