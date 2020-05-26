@@ -18,13 +18,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Principal;
@@ -46,7 +43,6 @@ import java.util.stream.Collectors;
     @Value("${server.auth.secret-key}") private String secretKey;
     @Value("${google.oauth2.CLIENT_ID}") private String googleClientId;
 
-    @Transactional(rollbackOn = Exception.class)
     public LoginOutputDto login(LoginInputDto loginInputDto) throws Exception {
         log.debug("{login start}");
         String username = loginInputDto.getUsername();
@@ -65,7 +61,6 @@ import java.util.stream.Collectors;
             sessionToken.getExpirationDate().toString());
     }
 
-    @Transactional(rollbackOn = Exception.class)
     public AccessOutputDto access(AccessInputDto accessInputDto) throws Exception {
         String tokenString = accessInputDto.getToken();
         tokenString = tokenString.replace("Bearer ", "");
@@ -188,7 +183,7 @@ import java.util.stream.Collectors;
             sessionToken.getExpirationDate().toString(), user.getId());
     }
 
-    @Transactional public UserInfoOutputDto findByPrincipal(Principal principal) throws Exception {
+    public UserInfoOutputDto findByPrincipal(Principal principal) throws Exception {
         UsernamePasswordAuthenticationToken authenticationToken =
             (UsernamePasswordAuthenticationToken) principal;
         User tempUser = (User) authenticationToken.getPrincipal();
@@ -214,11 +209,6 @@ import java.util.stream.Collectors;
         } else {
             return null;
         }
-    }
-
-    // remove google cache every 10 sec
-    @CacheEvict(allEntries = true, cacheNames = {"google"}) @Scheduled(fixedDelay = (10000))
-    public void cacheEvict() {
     }
 
     public User googleLogin(GoogleIdToken.Payload payload) throws Exception {

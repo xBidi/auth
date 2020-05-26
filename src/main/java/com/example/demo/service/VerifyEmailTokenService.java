@@ -1,12 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.model.entity.VerifyEmailToken;
-import com.example.demo.model.entity.VerifyEmailToken;
-import com.example.demo.repository.VerifyEmailTokenRepository;
 import com.example.demo.repository.VerifyEmailTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -22,7 +21,6 @@ import java.util.UUID;
 
     @Autowired VerifyEmailTokenRepository verifyEmailTokenRepository;
     @Autowired private UserService userService;
-
 
     public VerifyEmailToken generateToken() {
         String randomString = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
@@ -50,6 +48,7 @@ import java.util.UUID;
         return true;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void removeToken(VerifyEmailToken resetPasswordToken) {
         this.userService.removeVerifyEmailToken(resetPasswordToken.getToken());
         this.verifyEmailTokenRepository.deleteById(resetPasswordToken.getId());

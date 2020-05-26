@@ -32,19 +32,16 @@ import java.util.regex.Pattern;
     @Column(unique = true) private String email;
     @Convert(converter = AttributeEncryptor.class) private String password;
     private Boolean emailVerified = false;
-    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
-    private List<SessionToken> sessionTokens = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
-    private List<ResetPasswordToken> resetPasswordTokens = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
-    private List<VerifyEmailToken> verifyEmailTokens = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Role> roles = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Scope> scopes = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY) private List<SessionToken> sessionTokens = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY) private List<ResetPasswordToken> resetPasswordTokens =
+        new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY) private List<VerifyEmailToken> verifyEmailTokens =
+        new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY) private List<Role> roles = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY) private List<Scope> scopes = new ArrayList<>();
 
-    public User(String username, String email, String password,Boolean emailVerified, List<Role> roles,
-        List<Scope> scopes) {
+    public User(String username, String email, String password, Boolean emailVerified,
+        List<Role> roles, List<Scope> scopes) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -53,7 +50,7 @@ import java.util.regex.Pattern;
         this.emailVerified = emailVerified;
     }
 
-    public User(String id, String username, String email, String password,Boolean emailVerified,
+    public User(String id, String username, String email, String password, Boolean emailVerified,
         List<Role> roles, List<Scope> scopes) {
         this.id = id;
         this.username = username;
