@@ -1,14 +1,17 @@
 package com.example.demo.model.entity;
 
-import com.example.demo.security.AttributeEncryptor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 
 
 /**
@@ -16,16 +19,15 @@ import java.sql.Timestamp;
  *
  * @author diegotobalina
  */
-@Entity @NoArgsConstructor @Getter @Setter @ToString @Table(name = "spring_session_token")
-public class SessionToken {
+@NoArgsConstructor @Getter @Setter @ToString @Document(collection = "spring_session_token")
+public class SessionToken extends Auditable{
 
-    @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
-    @Convert(converter = AttributeEncryptor.class) private String token;
-    private Timestamp expeditionDate;
-    private Timestamp expirationDate;
+    @Id private String id;
+    @Indexed private String token;
+    private Date expeditionDate;
+    private Date expirationDate;
 
-    public SessionToken(String token, Timestamp expeditionDate, Timestamp expirationDate) {
+    public SessionToken(String token, Date expeditionDate, Date expirationDate) {
         this.token = token;
         this.expeditionDate = expeditionDate;
         this.expirationDate = expirationDate;

@@ -1,19 +1,19 @@
 version: '2'
 services:
   postgres:
-    container_name: postgres
-    image: postgres
+    container_name: mongo
+    image: mongo
     expose:
-      - 5432
+      - 27017
     ports:
-      - 5432:5432
+      - 27017:27017
     networks:
       - spring-network
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/data/db
     environment:
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: database
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: password
   spring:
     container_name: spring
     image: spring
@@ -31,8 +31,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: postgres://postgres:mysecretpassword@postgres:5432/database
-      DATABASE_SSL: disable
+      PROFILE: dev
 networks:
   spring-network:
     driver: bridge

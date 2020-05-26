@@ -34,8 +34,7 @@ import java.security.Principal;
     }
 
     @ApiOperation(value = "Logout", notes = "") @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("logout") public void logout(@RequestBody @Valid LogoutInputDto logoutInputDto)
-        throws Exception {
+    @DeleteMapping("logout") public void logout(@RequestBody @Valid LogoutInputDto logoutInputDto)  {
         this.authService.logout(logoutInputDto);
     }
 

@@ -3,21 +3,22 @@ package com.example.demo.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Scope entity
  *
  * @author diegotobalina
  */
-@Entity @Getter @NoArgsConstructor @ToString @Table(name = "spring_scope") public class Scope {
-    @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+@Getter @NoArgsConstructor @ToString @Document(collection = "spring_scope") public class Scope extends Auditable{
+    @Id private String id;
     private String name;
     private String description;
-    private String value;
+    @Indexed private String value;
 
     public Scope(String name, String description, String value) {
         this.name = name;
