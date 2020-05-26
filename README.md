@@ -30,16 +30,11 @@ mvn install
 docker deploy
 ````
 docker volume create db-data
-docker-compose up
+docker-compose build
+docker-compose up -d
 ````
 
-deploy on heroku
+docker stop
 ````
-heroku login
-heroku create
-heroku addons:create heroku-postgresql:hobby-dev
-git push heroku master
-heroku ps:scale web=1
-heroku open
-heroku logs --tail
+docker-compose down
 ````
