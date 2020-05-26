@@ -42,6 +42,6 @@ docker-compose down
 Driver example for external apps
 ````
 Driver driver = new Driver("http://diegotobalina97.ddns.net:8000/api/v1");
-String login = driver.login("user", "user", "password");
-System.out.println(login);
+String response = driver.login("user", "user", "password");
+System.out.println(response);
 ````
