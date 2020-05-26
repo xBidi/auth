@@ -12,8 +12,8 @@ services:
     volumes:
       - db-data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: "mongo"
+      MONGO_INITDB_ROOT_PASSWORD: "password"
   spring:
     container_name: spring
     image: spring
@@ -31,15 +31,15 @@ services:
     depends_on:
       - postgres
     environment:
-      LOG_LEVEL: DEBUG
-      MANAGEMENT_ENDPOINTS: *
-      PROFILE: dev
-      CLIENT_ID: placeholder
-      MAIL_USERNAME: placeholder
-      MAIL_PASSWORD: placeholder
-      MONGO_HOST: mongo
-      MONGO_USER: mongo
-      MONGO_PASSWORD: password
+      LOG_LEVEL: "DEBUG"
+      MANAGEMENT_ENDPOINTS: "*"
+      PROFILE: "dev"
+      CLIENT_ID: "placeholder"
+      MAIL_USERNAME: "placeholder"
+      MAIL_PASSWORD: "placeholder"
+      MONGO_HOST: "mongo"
+      MONGO_USER: "mongo"
+      MONGO_PASSWORD: "password"
 networks:
   spring-network:
     driver: bridge
