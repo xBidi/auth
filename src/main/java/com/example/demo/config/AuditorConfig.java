@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 @Configuration
 @EnableMongoAuditing(auditorAwareRef = "auditorAware")
-public class JpaConfig {
+public class AuditorConfig {
     @Bean
     public AuditorAware<String> auditorAware() {
         return new AuditorAwareImpl();
