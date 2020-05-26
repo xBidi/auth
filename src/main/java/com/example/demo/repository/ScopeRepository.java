@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.entity.Scope;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -11,6 +11,6 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface ScopeRepository extends JpaRepository<Scope, String> {
+@Repository public interface ScopeRepository extends MongoRepository<Scope, String> {
     Optional<Scope> findByValue(String value);
 }

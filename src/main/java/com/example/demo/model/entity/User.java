@@ -1,17 +1,16 @@
 package com.example.demo.model.entity;
 
-import com.example.demo.model.auditor.Auditable;
-import com.example.demo.security.AttributeEncryptor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,47 +22,47 @@ import java.util.regex.Pattern;
  *
  * @author diegotobalina
  */
-@Entity @Getter @Setter @NoArgsConstructor @EntityListeners(UserListener.class)
-@Table(name = "spring_user") @ToString public class User extends Auditable<String> {
+@Getter @Setter @NoArgsConstructor @Document(collection = "spring_user") @ToString
+public class User extends Auditable{
 
-    @Id @GeneratedValue(generator = "uuid") @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
-    @Column(unique = true) private String username;
-    @Column(unique = true) private String email;
-    @Convert(converter = AttributeEncryptor.class) private String password;
+    @Id private String id;
+    @Indexed(unique = true) private String username;
+    @Indexed(unique = true) private String email;
+
+    private String password;
     private Boolean emailVerified = false;
-    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
     private List<SessionToken> sessionTokens = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
     private List<ResetPasswordToken> resetPasswordTokens = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL) @LazyCollection(LazyCollectionOption.FALSE)
     private List<VerifyEmailToken> verifyEmailTokens = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
     private List<Role> roles = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.DETACH) @LazyCollection(LazyCollectionOption.FALSE)
     private List<Scope> scopes = new ArrayList<>();
 
-    public User(String username, String email, String password,Boolean emailVerified, List<Role> roles,
-        List<Scope> scopes) {
+    public User(String username, String email, String password, Boolean emailVerified,
+        List<Role> roles, List<Scope> scopes) {
         this.username = username;
         this.email = email;
-        this.password = password;
+        this.setPassword(password);
         this.roles = roles;
         this.scopes = scopes;
         this.emailVerified = emailVerified;
     }
 
-    public User(String id, String username, String email, String password,Boolean emailVerified,
+    public User(String id, String username, String email, String password, Boolean emailVerified,
         List<Role> roles, List<Scope> scopes) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
+        this.setPassword(password);
         this.roles = roles;
         this.scopes = scopes;
         this.emailVerified = emailVerified;
     }
 
+
+    public void setPassword(String password) {
+        this.password = password;
+        this.hash();
+    }
 
     public void hash() {
         String regex = "^\\$2[ayb]\\$.{56}$"; // regex bcrypt
@@ -80,11 +79,4 @@ import java.util.regex.Pattern;
     }
 
 
-}
-
-
-class UserListener {
-    @PrePersist @PreUpdate public void preSave(User user) {
-        user.hash();
-    }
 }

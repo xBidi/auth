@@ -5,6 +5,7 @@ import com.example.demo.repository.SessionTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -21,13 +22,11 @@ import java.util.UUID;
     @Autowired SessionTokenRepository sessionTokenRepository;
     @Autowired private UserService userService;
 
-
     public SessionToken generateToken() {
         String randomString = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
         Timestamp expeditionDate = new Timestamp(System.currentTimeMillis());
         Timestamp expirationDate = this.getExpirationDate();
-        SessionToken
-            sessionToken = new SessionToken(randomString, expeditionDate, expirationDate);
+        SessionToken sessionToken = new SessionToken(randomString, expeditionDate, expirationDate);
         sessionTokenRepository.save(sessionToken);
         return sessionToken;
     }
@@ -47,6 +46,7 @@ import java.util.UUID;
         return true;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void removeToken(SessionToken sessionToken) {
         this.userService.removeSessionToken(sessionToken.getToken());
         this.sessionTokenRepository.deleteById(sessionToken.getId());

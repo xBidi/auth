@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
     @Autowired ResetPasswordTokenService resetPasswordTokenService;
     @Autowired VerifyEmailTokenService verifyEmailTokenService;
 
+
     public User findByUsernameOrEmail(String username, String email) {
         if (username != null && !username.isEmpty()) {
             return this.findByUsername(username);
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
         }
         return null;
     }
+
 
     public RegisterOutputDto register(RegisterInputDto registerInputDto) throws Exception {
         String username = registerInputDto.getUsername();
@@ -70,7 +73,8 @@ import java.util.stream.Collectors;
         return errors;
     }
 
-    public User createUser(User user) throws Exception {
+    @Transactional(rollbackFor = Exception.class) public User createUser(User user)
+        throws Exception {
         user.setId(null);
         setDefaultRoles(user);
         setDefaultScopes(user);
@@ -96,20 +100,24 @@ import java.util.stream.Collectors;
         user.getScopes().add(scopeService.findByValue("DELETE_USER"));
     }
 
+
     public void addSessionToken(User user, SessionToken sessionToken) {
         user.getSessionTokens().add(sessionToken);
         this.userRepository.save(user);
     }
+
 
     public void addResetPasswordToken(User user, ResetPasswordToken resetPasswordToken) {
         user.getResetPasswordTokens().add(resetPasswordToken);
         this.userRepository.save(user);
     }
 
+
     public void addVerifyEmailToken(User user, VerifyEmailToken verifyEmailToken) {
         user.getVerifyEmailTokens().add(verifyEmailToken);
         this.userRepository.save(user);
     }
+
 
     public void removeSessionToken(String tokenString) {
         User user = this.findBySessionTokensToken(tokenString);
@@ -126,6 +134,7 @@ import java.util.stream.Collectors;
         return userInfoOutputDtos;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public UserInfoOutputDto userToUserInfoOutputDto(User user) {
         List<String> roles =
             user.getRoles().stream().map(role -> role.getValue()).collect(Collectors.toList());
@@ -160,7 +169,6 @@ import java.util.stream.Collectors;
         return optionalUser.get();
     }
 
-
     public User findByUsername(String username) {
         Optional<User> optionalUser = this.userRepository.findByUsername(username);
         if (!optionalUser.isPresent()) {
@@ -193,11 +201,13 @@ import java.util.stream.Collectors;
         return optionalUser.get();
     }
 
+
     public void removeResetPasswordToken(String tokenString) {
         User user = this.findByResetPasswordTokensToken(tokenString);
         user.getResetPasswordTokens().removeIf(token -> token.getToken().equals(tokenString));
         this.userRepository.save(user);
     }
+
 
     public void updatePassword(Principal principal, UpdateUserPasswordDto updateUserPasswordDto)
         throws Exception {
@@ -226,6 +236,8 @@ import java.util.stream.Collectors;
         mailService.mailResetPassword(email, resetPasswordToken.getToken());
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     public void resetPasswordWithEmail(ResetPasswordWithEmailDto resetPasswordWithEmailDto) {
         String token = resetPasswordWithEmailDto.getToken();
         ResetPasswordToken resetPasswordToken = resetPasswordTokenService.findByToken(token);
@@ -241,6 +253,7 @@ import java.util.stream.Collectors;
         userRepository.save(user);
         resetPasswordTokenService.removeToken(resetPasswordToken);
     }
+
 
     public void removeVerifyEmailToken(String tokenString) {
         User user = this.findByVerifyEmailTokensToken(tokenString);
@@ -260,6 +273,7 @@ import java.util.stream.Collectors;
         mailService.mailVerifyEmail(email, verifyEmailToken.getToken());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void verifyEmail(VerifyEmailDto verifyEmailDto) {
         String token = verifyEmailDto.getToken();
         VerifyEmailToken verifyEmailToken = verifyEmailTokenService.findByToken(token);

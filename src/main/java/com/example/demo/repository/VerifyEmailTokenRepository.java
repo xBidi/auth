@@ -1,8 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.entity.ResetPasswordToken;
 import com.example.demo.model.entity.VerifyEmailToken;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,6 +11,7 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface VerifyEmailTokenRepository extends JpaRepository<VerifyEmailToken, String> {
+@Repository public interface VerifyEmailTokenRepository extends
+    MongoRepository<VerifyEmailToken, String> {
     Optional<VerifyEmailToken> findByToken(String tokenString);
 }

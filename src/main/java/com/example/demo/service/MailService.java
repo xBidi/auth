@@ -3,6 +3,7 @@ package com.example.demo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -16,7 +17,7 @@ import java.io.InputStreamReader;
 
     @Autowired private JavaMailSender javaMailSender;
 
-    public void mailResetPassword(String destinatario, String token)
+    @Async public void mailResetPassword(String destinatario, String token)
         throws IOException, MessagingException {
         String template = readTemplate("resetPasswordEmail.html");
         String enlace = "http://localhost:8080/api/v1/users/password/reset?token=" + token;
@@ -24,7 +25,7 @@ import java.io.InputStreamReader;
         sendEmail(destinatario, "Reset contraseña", template);
     }
 
-    public void mailVerifyEmail(String destinatario, String token)
+    @Async public void mailVerifyEmail(String destinatario, String token)
         throws IOException, MessagingException {
         String template = readTemplate("verifyEmailEmail.html");
         String enlace = "http://localhost:8080/api/v1/users/email/verify?token=" + token;
@@ -32,7 +33,7 @@ import java.io.InputStreamReader;
         sendEmail(destinatario, "Verificar correo", template);
     }
 
-    public void mailNewUser(String destinatario, String token)
+    @Async public void mailNewUser(String destinatario, String token)
         throws IOException, MessagingException {
         String template = readTemplate("newUser.html");
         String enlace = "http://localhost:8080/api/v1/users/email/verify?token=" + token;

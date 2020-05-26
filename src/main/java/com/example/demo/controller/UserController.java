@@ -48,7 +48,7 @@ import java.util.List;
     @ApiOperation(value = "recupera la contraseña usando el token recibido por correo", notes = "")
     @PutMapping("password/reset") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetPasswordWithEmail(
-        @RequestBody @Valid ResetPasswordWithEmailDto resetPasswordWithEmailDto) throws Exception {
+        @RequestBody @Valid ResetPasswordWithEmailDto resetPasswordWithEmailDto) {
         this.userService.resetPasswordWithEmail(resetPasswordWithEmailDto);
     }
 
@@ -67,8 +67,8 @@ import java.util.List;
     }
 
     @ApiOperation(value = "verifica el correo electronico", notes = "") @PostMapping("email/verify")
-    @ResponseStatus(HttpStatus.NO_CONTENT) public void sendVerifyEmailEmail(@Valid @RequestBody VerifyEmailDto verifyEmailDto)
-        throws Exception {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void sendVerifyEmailEmail(@Valid @RequestBody VerifyEmailDto verifyEmailDto) {
         this.userService.verifyEmail(verifyEmailDto);
     }
 
