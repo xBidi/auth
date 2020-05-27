@@ -1,4 +1,4 @@
-package com.example.demo.exception;
+package com.spring.server.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;

@@ -1,18 +1,17 @@
-package com.example.demo.data;
+package com.spring.server.data;
 
-import com.example.demo.model.entity.Role;
-import com.example.demo.model.entity.Scope;
-import com.example.demo.model.entity.User;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.ScopeRepository;
-import com.example.demo.repository.UserRepository;
+import com.spring.server.model.entity.Role;
+import com.spring.server.model.entity.Scope;
+import com.spring.server.model.entity.User;
+import com.spring.server.repository.RoleRepository;
+import com.spring.server.repository.ScopeRepository;
+import com.spring.server.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

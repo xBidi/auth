@@ -1,9 +1,9 @@
-package com.example.demo.controller;
+package com.spring.server.controller;
 
-import com.example.demo.model.dto.*;
-import com.example.demo.model.validator.JwtTokenConstraint;
-import com.example.demo.model.validator.TokenConstraint;
-import com.example.demo.service.AuthService;
+import com.spring.server.model.dto.*;
+import com.spring.server.model.validator.JwtTokenConstraint;
+import com.spring.server.model.validator.TokenConstraint;
+import com.spring.server.service.AuthService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

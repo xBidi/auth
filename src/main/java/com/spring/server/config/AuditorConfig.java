@@ -1,6 +1,6 @@
-package com.example.demo.config;
+package com.spring.server.config;
 
-import com.example.demo.service.AuditorAwareImpl;
+import com.spring.server.service.AuditorAwareImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.spring.server.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ import java.security.Principal;
             useDefaultResponseMessages(false).
             ignoredParameterTypes(Principal.class).
             select().
-            apis(RequestHandlerSelectors.basePackage("com.example.demo.controller")).
+            apis(RequestHandlerSelectors.basePackage("com.spring.server.controller")).
             paths(PathSelectors.any()).
             build();
     }

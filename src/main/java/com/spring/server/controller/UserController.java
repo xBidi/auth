@@ -1,23 +1,19 @@
-package com.example.demo.controller;
+package com.spring.server.controller;
 
-import com.example.demo.model.dto.*;
-import com.example.demo.model.validator.JwtTokenConstraint;
-import com.example.demo.service.UserService;
+import com.spring.server.model.dto.*;
+import com.spring.server.model.validator.JwtTokenConstraint;
+import com.spring.server.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 

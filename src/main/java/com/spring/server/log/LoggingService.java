@@ -1,4 +1,4 @@
-package com.example.demo.log;
+package com.spring.server.log;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

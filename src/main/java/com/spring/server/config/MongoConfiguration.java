@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.spring.server.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
