@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Component @WebFilter("/*") @Slf4j public class StatsFilter implements Filter {
@@ -20,6 +21,10 @@ import java.io.IOException;
             chain.doFilter(req, resp);
         } finally {
             time = System.currentTimeMillis() - time;
+            if (req instanceof HttpServletRequest && !((HttpServletRequest) req).getRequestURL()
+                .toString().contains("/api/")) {
+                return;
+            }
             log.debug("total request time: {} ms", time);
         }
     }
