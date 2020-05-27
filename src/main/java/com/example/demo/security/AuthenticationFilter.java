@@ -6,6 +6,7 @@ import com.example.demo.service.AuthService;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,10 +35,15 @@ import java.util.List;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws ServletException, IOException {
-        log.debug("{doFilterInternal start}");
         String token = request.getHeader("Authorization");
         if (token == null || token.isEmpty()) {
-            log.debug("{doFilterInternal end} no token");
+            log.debug("no token");
+            chain.doFilter(request, response);
+            return;
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            log.debug("already authenticated");
             chain.doFilter(request, response);
             return;
         }
@@ -51,9 +57,9 @@ import java.util.List;
                     simpleGrantedAuthorities);
             SecurityContextHolder.getContext()
                 .setAuthentication(usernamePasswordAuthenticationToken);
-            log.debug("{doFilterInternal end} authentication ok");
+            log.debug("authentication ok: {}", user.toString());
         } catch (Exception ex) {
-            log.warn("{doFilterInternal end} " + ex.getMessage());
+            log.warn("exception: {}", ex.getStackTrace());
         } finally {
             chain.doFilter(request, response);
         }

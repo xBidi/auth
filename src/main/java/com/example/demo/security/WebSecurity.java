@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
     @Value("${server.path.oauth}") private String authPath;
 
     @Override protected void configure(HttpSecurity http) throws Exception {
-        log.debug("{configure start}");
+        log.info("starting configuration");
         http.
             csrf().
             disable().
@@ -67,7 +67,5 @@ import javax.servlet.http.HttpServletResponse;
                 UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new GoogleAuthenticationFilter(authService),
                 UsernamePasswordAuthenticationFilter.class);
-        log.debug("{configure end}");
-
     }
 }

@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
     @Value("${google.oauth2.CLIENT_ID}") private String googleClientId;
 
     public LoginOutputDto login(LoginInputDto loginInputDto) throws Exception {
-        log.debug("{login start}");
         String username = loginInputDto.getUsername();
         String email = loginInputDto.getEmail();
         String inputPassword = loginInputDto.getPassword();
@@ -52,11 +51,12 @@ import java.util.stream.Collectors;
         String userPasswordHash = user.getPassword();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (!encoder.matches(inputPassword, userPasswordHash)) {
+            log.debug("invalid password");
             throw new Exception("invalid password");
         }
         SessionToken sessionToken = this.sessionTokenService.generateToken();
         userService.addSessionToken(user, sessionToken);
-        return new LoginOutputDto(sessionToken.getToken(),
+        return new LoginOutputDto("Bearer " + sessionToken.getToken(),
             sessionToken.getExpeditionDate().toString(),
             sessionToken.getExpirationDate().toString());
     }
@@ -65,12 +65,15 @@ import java.util.stream.Collectors;
         String tokenString = accessInputDto.getToken();
         tokenString = tokenString.replace("Bearer ", "");
         SessionToken sessionToken = sessionTokenService.findByToken(tokenString);
+        log.debug("sessionToken by token: {}", sessionToken.toString());
         if (!sessionTokenService.isValid(sessionToken)) {
+            log.debug("sessionToken not valid, calling removeToken {}", sessionToken);
             sessionTokenService.removeToken(sessionToken);
             throw new Exception("invalid token");
         }
         sessionTokenService.refreshToken(tokenString);
         User user = userService.findBySessionTokensToken(tokenString);
+        log.debug("user by session token token {}", user.toString());
         String username = user.getUsername();
         long currentTimeMillis = System.currentTimeMillis();
         long expirationTimeMillis = currentTimeMillis + (15 * 60 * 1000);
@@ -83,7 +86,8 @@ import java.util.stream.Collectors;
         String token = Jwts.builder().setId("").setSubject(username).setClaims(claims)
             .setIssuedAt(new Date(currentTimeMillis)).setExpiration(new Date(expirationTimeMillis))
             .signWith(SignatureAlgorithm.HS512, secretKey.getBytes()).compact();
-        return new AccessOutputDto(token, expeditionDate.toString(), expirationDate.toString());
+        return new AccessOutputDto("Bearer " + token, expeditionDate.toString(),
+            expirationDate.toString());
     }
 
     public void logout(LogoutInputDto logoutInputDto) {
@@ -94,7 +98,7 @@ import java.util.stream.Collectors;
 
 
     public User validateJwt(String token) {
-        log.debug("{validateJwt start}");
+        token = token.replace("Bearer ", "");
         Claims claims = this.validateToken(token);
         ObjectMapper mapper = new ObjectMapper();
         List<Role> roles =
@@ -126,6 +130,7 @@ import java.util.stream.Collectors;
     }
 
     public TokenInfoJwtOutputDto getJwtTokenInfo(String tokenString) throws Exception {
+        tokenString = tokenString.replace("Bearer ", "");
         // validate jwt
         TokenInfoJwtOutputDto tokenInfoOutputDto;
         if ((tokenInfoOutputDto = getJwtInfo(tokenString)) != null) {
@@ -138,6 +143,7 @@ import java.util.stream.Collectors;
     }
 
     private TokenInfoJwtOutputDto getJwtInfo(String tokenString) {
+        tokenString = tokenString.replace("Bearer ", "");
         try {
             Claims claims = this.validateToken(tokenString);
             Integer expeditionDate = (Integer) claims.get("iat");
@@ -197,6 +203,7 @@ import java.util.stream.Collectors;
 
     public GoogleIdToken.Payload getGoogleInfo(String token)
         throws GeneralSecurityException, IOException {
+        token = token.replace("Bearer ", "");
         if (transport == null && jsonFactory == null) {
             transport = GoogleNetHttpTransport.newTrustedTransport();
             jsonFactory = JacksonFactory.getDefaultInstance();

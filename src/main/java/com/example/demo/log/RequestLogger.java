@@ -16,13 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 
     @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
         Object handler) {
-        log.debug("{preHandle start}");
-
         if (DispatcherType.REQUEST.name().equals(request.getDispatcherType().name()) && request
             .getMethod().equals(HttpMethod.GET.name())) {
             loggingService.logRequest(request, null);
         }
-        log.debug("{preHandle start}");
         return true;
     }
 }

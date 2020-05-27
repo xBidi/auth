@@ -16,12 +16,11 @@ import java.io.IOException;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-        log.debug("{cors filter start}");
+        log.debug("setting cors headers");
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "authorization, content-type");
-        log.debug("{cors filter end}");
         filterChain.doFilter(request, response);
     }
 

@@ -17,16 +17,14 @@ import java.util.List;
 @Component @Slf4j public class CustomPermissionEvaluator implements PermissionEvaluator {
     @Override public boolean hasPermission(Authentication authentication, Object accessType,
         Object permission) {
-        log.debug("{hasPermission start}");
         String requiredPermission = String.valueOf(permission);
         List<Scope> scopes = (List<Scope>) authentication.getCredentials();
+        log.debug("required scope: {}, user scopes: {}", requiredPermission, scopes.toString());
         for (Scope scope : scopes) {
             if (requiredPermission.startsWith(scope.getValue())) {
-                log.debug("{hasPermission end} permissions ok");
                 return true;
             }
         }
-        log.debug("{hasPermission end} permissions not ok");
         return false;
     }
 
