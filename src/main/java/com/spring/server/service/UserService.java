@@ -145,7 +145,7 @@ import java.util.stream.Collectors;
             }
         }
         List<TokenDto> sessions = user.getSessionTokens().stream().map(
-            sessionToken -> new TokenDto(sessionToken.getToken(),
+            sessionToken -> new TokenDto("Bearer "+sessionToken.getToken(),
                 sessionToken.getExpeditionDate().toString(),
                 sessionToken.getExpirationDate().toString())).collect(Collectors.toList());
         return new UserInfoOutputDto(user.getId(), user.getUsername(), user.getEmail(),
