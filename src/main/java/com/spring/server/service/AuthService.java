@@ -1,10 +1,5 @@
 package com.spring.server.service;
 
-import com.example.demo.model.dto.*;
-import com.spring.server.model.entity.Role;
-import com.spring.server.model.entity.Scope;
-import com.spring.server.model.entity.SessionToken;
-import com.spring.server.model.entity.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -13,6 +8,10 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.spring.server.model.dto.*;
+import com.spring.server.model.entity.Role;
+import com.spring.server.model.entity.Scope;
+import com.spring.server.model.entity.SessionToken;
+import com.spring.server.model.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

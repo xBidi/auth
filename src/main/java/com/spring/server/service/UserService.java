@@ -1,12 +1,11 @@
 package com.spring.server.service;
 
-import com.example.demo.model.dto.*;
+import com.spring.server.model.dto.*;
 import com.spring.server.model.entity.ResetPasswordToken;
 import com.spring.server.model.entity.SessionToken;
 import com.spring.server.model.entity.User;
 import com.spring.server.model.entity.VerifyEmailToken;
 import com.spring.server.repository.UserRepository;
-import com.spring.server.model.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
