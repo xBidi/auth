@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 @Configuration @Profile("dev") @Slf4j public class HttpTraceActuatorConfiguration {
 
     @Bean public HttpTraceRepository httpTraceRepository() {
-        log.debug("Createing HttpTraceRepository bean");
+        log.info("new InMemoryHttpTraceRepository()");
         return new InMemoryHttpTraceRepository();
     }
 

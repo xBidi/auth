@@ -1,10 +1,11 @@
 package com.example.demo.model.dto;
 
+import com.example.demo.model.validator.PasswordConstraint;
+import com.example.demo.model.validator.ResetPasswordTokenConstraint;
 import lombok.Data;
 
-@Data
-public class ResetPasswordWithEmailDto {
+@Data public class ResetPasswordWithEmailDto {
 
-    private String token;
-    private String newPassword;
+    @ResetPasswordTokenConstraint private String token;
+    @PasswordConstraint private String newPassword;
 }

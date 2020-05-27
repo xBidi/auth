@@ -1,10 +1,14 @@
 package com.example.demo.model.dto;
 
+import com.example.demo.model.validator.PasswordConstraint;
+import com.example.demo.model.validator.UsernameConstraint;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.validation.constraints.Email;
 
 /**
  * Register endpoint intput dto
@@ -12,7 +16,7 @@ import lombok.ToString;
  * @author diegotobalina
  */
 @AllArgsConstructor @Getter @Setter @ToString public class RegisterInputDto {
-    @ApiModelProperty(example = "user") private String username;
-    @ApiModelProperty(example = "email") private String email;
-    @ApiModelProperty(example = "password") private String password;
+    @ApiModelProperty(example = "user") @UsernameConstraint private String username;
+    @ApiModelProperty(example = "email") @Email private String email;
+    @ApiModelProperty(example = "password") @PasswordConstraint private String password;
 }

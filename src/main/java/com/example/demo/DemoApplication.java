@@ -25,22 +25,7 @@ import javax.servlet.http.HttpServletResponse;
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    @Bean @Autowired @ConditionalOnExpression("'${mongo.transactions}'=='enabled'")
-    MongoTransactionManager mongoTransactionManager(MongoDbFactory dbFactory) {
-        return new MongoTransactionManager(dbFactory);
-    }
 
-    @Bean LoggingService loggingService() {
-        log.debug("{loggingService bean} creating new bean");
-        return new LoggingService() {
-            @Override public void logRequest(HttpServletRequest httpServletRequest, Object body) {
-                log.debug(body.toString());
-            }
 
-            @Override public void logResponse(HttpServletRequest httpServletRequest,
-                HttpServletResponse httpServletResponse, Object body) {
-                log.debug(body.toString());
-            }
-        };
-    }
+
 }

@@ -25,11 +25,9 @@ import java.lang.reflect.Type;
     @Override public Object afterBodyRead(Object body, HttpInputMessage inputMessage,
         MethodParameter parameter, Type targetType,
         Class<? extends HttpMessageConverter<?>> converterType) {
-        log.debug("{afterBodyRead start}");
         loggingService.logRequest(httpServletRequest, body);
         Object afterBodyRead =
             super.afterBodyRead(body, inputMessage, parameter, targetType, converterType);
-        log.debug("{afterBodyRead end}");
         return afterBodyRead;
     }
 

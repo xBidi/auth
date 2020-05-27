@@ -6,6 +6,7 @@ import com.example.demo.service.AuthService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,10 +35,15 @@ import java.util.List;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws ServletException, IOException {
-        log.debug("{google doFilterInternal start}");
         String token = request.getHeader("Authorization");
         if (token == null || token.isEmpty()) {
-            log.debug("{google doFilterInternal end} no token");
+            log.debug("no token");
+            chain.doFilter(request, response);
+            return;
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            log.debug("already authenticated");
             chain.doFilter(request, response);
             return;
         }
@@ -55,9 +61,9 @@ import java.util.List;
                     simpleGrantedAuthorities);
             SecurityContextHolder.getContext()
                 .setAuthentication(usernamePasswordAuthenticationToken);
-            log.debug("{google doFilterInternal end} authentication ok");
+            log.debug("authentication ok: {}", user.toString());
         } catch (Exception ex) {
-            log.warn("{google doFilterInternal end} " + ex.getMessage());
+            log.warn("exception: {}", ex.getStackTrace());
         } finally {
             chain.doFilter(request, response);
         }

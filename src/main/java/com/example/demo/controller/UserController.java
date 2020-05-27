@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.dto.*;
+import com.example.demo.model.validator.JwtTokenConstraint;
 import com.example.demo.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +27,7 @@ import java.util.List;
  * @author diegotobalina
  */
 @RestController @RequestMapping("${server.context.path}/${server.api.version}/${server.path.users}")
-@ResponseStatus(HttpStatus.OK) @Slf4j public class UserController {
+@ResponseStatus(HttpStatus.OK) @Slf4j @Validated public class UserController {
 
     @Autowired UserService userService;
 
@@ -39,9 +41,10 @@ import java.util.List;
     @ApiOperation(value = "Update user password", notes = "") @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
     @PreAuthorize("hasRole('USER') and hasPermission('hasAccess','MODIFY_USER')")
-    @PutMapping("password") @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updatePassword(Principal principal,
-        @RequestBody @Valid UpdateUserPasswordDto updateUserPasswordDto) throws Exception {
+    @PutMapping("password") @ResponseStatus(HttpStatus.NO_CONTENT) public void updatePassword(
+        @RequestHeader("Authorization") @JwtTokenConstraint String authorization,
+        Principal principal, @RequestBody @Valid UpdateUserPasswordDto updateUserPasswordDto)
+        throws Exception {
         this.userService.updatePassword(principal, updateUserPasswordDto);
     }
 
@@ -60,9 +63,11 @@ import java.util.List;
     }
 
     @ApiOperation(value = "envia un correo para verificar el email", notes = "")
-    @PostMapping("email") @ResponseStatus(HttpStatus.NO_CONTENT) @ApiImplicitParams({
+    @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
-    public void sendVerifyEmailEmail(Principal principal) throws Exception {
+    @PostMapping("email") @ResponseStatus(HttpStatus.NO_CONTENT) public void sendVerifyEmailEmail(
+        @RequestHeader("Authorization") @JwtTokenConstraint String authorization,
+        Principal principal) throws Exception {
         this.userService.sendVerifyEmailEmail(principal);
     }
 
@@ -76,20 +81,11 @@ import java.util.List;
     @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
     @GetMapping @PreAuthorize("hasRole('ADMIN') and hasPermission('hasAccess','READ')")
-    public List<UserInfoOutputDto> users() {
+    public List<UserInfoOutputDto> users(
+        @RequestHeader("Authorization") @JwtTokenConstraint String authorization) {
         return userService.findAll();
     }
 
-    @ExceptionHandler({Exception.class}) @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private void exceptionHandler(HttpServletRequest request, HttpServletResponse response,
-        Exception ex) throws IOException {
-        response.sendError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-    }
 
-    @ExceptionHandler({AccessDeniedException.class}) @ResponseStatus(HttpStatus.FORBIDDEN)
-    private void accessDeniedExceptionHandler(HttpServletRequest request,
-        HttpServletResponse response, AccessDeniedException ex) throws IOException {
-        response.sendError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
-    }
 
 }

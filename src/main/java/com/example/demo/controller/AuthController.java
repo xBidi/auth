@@ -1,15 +1,19 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.dto.*;
+import com.example.demo.model.validator.JwtTokenConstraint;
+import com.example.demo.model.validator.TokenConstraint;
 import com.example.demo.service.AuthService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
@@ -20,7 +24,7 @@ import java.security.Principal;
  * @author diegotobalina
  */
 @RestController @RequestMapping("${server.context.path}/${server.api.version}/${server.path.oauth}")
-@ResponseStatus(HttpStatus.OK) @Slf4j public class AuthController {
+@ResponseStatus(HttpStatus.OK) @Slf4j @Validated public class AuthController {
 
     @Autowired AuthService authService;
 
@@ -34,7 +38,7 @@ import java.security.Principal;
     }
 
     @ApiOperation(value = "Logout", notes = "") @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("logout") public void logout(@RequestBody @Valid LogoutInputDto logoutInputDto)  {
+    @DeleteMapping("logout") public void logout(@RequestBody @Valid LogoutInputDto logoutInputDto) {
         this.authService.logout(logoutInputDto);
     }
 
@@ -47,7 +51,7 @@ import java.security.Principal;
 
     @ApiOperation(value = "Token info", notes = "Returns token information, valid tokens: Bearer, Jwt")
     @ResponseStatus(HttpStatus.OK) @GetMapping("tokenInfo")
-    public TokenInfoOutputDto tokenInfo(@RequestParam(name = "token") String token)
+    public TokenInfoOutputDto tokenInfo(@RequestParam(name = "token") @TokenConstraint String token)
         throws Exception {
         return this.authService.tokenInfo(token);
     }
@@ -55,8 +59,9 @@ import java.security.Principal;
     @ApiOperation(value = "User info", notes = "") @ResponseStatus(HttpStatus.OK)
     @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
-    @GetMapping("userInfo") public UserInfoOutputDto userInfo(Principal principal)
-        throws Exception {
+    @GetMapping("userInfo") public UserInfoOutputDto userInfo(
+        @RequestHeader("Authorization") @JwtTokenConstraint String authorization,
+        Principal principal) throws Exception {
         return this.authService.findByPrincipal(principal);
     }
 
@@ -64,5 +69,11 @@ import java.security.Principal;
     private void exceptionHandler(HttpServletRequest request, HttpServletResponse response,
         Exception ex) throws IOException {
         response.sendError(HttpStatus.UNAUTHORIZED.value(), "invalid credentials");
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class}) @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private void constraintViolationExceptionHandler(HttpServletRequest request,
+        HttpServletResponse response, Exception ex) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 }
