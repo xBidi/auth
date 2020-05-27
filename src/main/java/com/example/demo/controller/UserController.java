@@ -73,7 +73,7 @@ import java.util.List;
 
     @ApiOperation(value = "verifica el correo electronico", notes = "") @PostMapping("email/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void sendVerifyEmailEmail(@Valid @RequestBody VerifyEmailDto verifyEmailDto) {
+    public void verifyEmailEmail(@Valid @RequestBody VerifyEmailDto verifyEmailDto) {
         this.userService.verifyEmail(verifyEmailDto);
     }
 
