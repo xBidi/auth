@@ -31,12 +31,9 @@ docker deploy
 ````
 docker volume create db-data
 docker-compose build
-docker-compose up -d
-````
-
-docker stop
-````
 docker-compose down
+docker-compose up -d
+docker-compose logs -f 2>&1 | ccze -m ansi
 ````
 
 Driver example for external apps
