@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
     @Autowired UserService userService;
     @Autowired SessionTokenService sessionTokenService;
     @Value("${server.auth.secret-key}") private String secretKey;
-    @Value("${google.oauth2.CLIENT_ID}") private String googleClientId;
+    @Value("${google.oauth2.client_id}") private String googleClientId;
 
     public LoginOutputDto login(LoginInputDto loginInputDto) throws Exception {
         String username = loginInputDto.getUsername();

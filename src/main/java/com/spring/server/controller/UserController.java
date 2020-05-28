@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author diegotobalina
  */
-@RestController @RequestMapping("${server.context.path}/${server.api.version}/${server.path.users}")
+@RestController @RequestMapping("api/v1/users")
 @ResponseStatus(HttpStatus.OK) @Slf4j @Validated public class UserController {
 
     @Autowired UserService userService;

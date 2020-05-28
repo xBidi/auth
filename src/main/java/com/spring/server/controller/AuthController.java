@@ -23,7 +23,7 @@ import java.security.Principal;
  *
  * @author diegotobalina
  */
-@RestController @RequestMapping("${server.context.path}/${server.api.version}/${server.path.oauth}")
+@RestController @RequestMapping("api/v1/oauth2")
 @ResponseStatus(HttpStatus.OK) @Slf4j @Validated public class AuthController {
 
     @Autowired AuthService authService;

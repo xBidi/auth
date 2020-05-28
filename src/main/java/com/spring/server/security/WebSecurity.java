@@ -21,10 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity @Slf4j public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired AuthService authService;
-    @Value("${server.context.path}") private String contextPath;
-    @Value("${server.api.version}") private String apiVersion;
-    @Value("${server.path.users}") private String usersPath;
-    @Value("${server.path.oauth}") private String authPath;
 
     @Override protected void configure(HttpSecurity http) throws Exception {
         log.info("starting configuration");
@@ -41,31 +37,19 @@ import javax.servlet.http.HttpServletResponse;
                 rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
             });
 
-        http.antMatcher(String.format("/%s/%s/**", contextPath, apiVersion)).
+        AuthenticationFilter aFilter = new AuthenticationFilter(authService);
+        GoogleAuthenticationFilter gFilter = new GoogleAuthenticationFilter(authService);
+
+        http.antMatcher("/api/v1/**").
             authorizeRequests().
-            antMatchers(String.format("/%s/%s/%s/**", contextPath, apiVersion, authPath)).
-            permitAll().
-            antMatchers(HttpMethod.GET,
-                String.format("/%s/%s/%s/userInfo", contextPath, apiVersion, authPath)).
-            authenticated().
-            antMatchers(HttpMethod.PUT,
-                String.format("/%s/%s/%s/password/reset", contextPath, apiVersion, usersPath)).
-            permitAll().
-            antMatchers(HttpMethod.POST,
-                String.format("/%s/%s/%s/password/email", contextPath, apiVersion, usersPath)).
-            permitAll().
-            antMatchers(HttpMethod.POST,
-                String.format("/%s/%s/%s/email/verify", contextPath, apiVersion, usersPath)).
-            permitAll().
-            antMatchers(HttpMethod.POST,
-                String.format("/%s/%s/%s/register", contextPath, apiVersion, usersPath)).
-            permitAll().
-            anyRequest().
-            authenticated().
-            and().
-            addFilterBefore(new AuthenticationFilter(authService),
-                UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new GoogleAuthenticationFilter(authService),
-                UsernamePasswordAuthenticationFilter.class);
+            antMatchers("/api/v1/oauth2/**").permitAll().
+            antMatchers(HttpMethod.GET, "/api/v1/oauth2/userInfo").authenticated().
+            antMatchers(HttpMethod.PUT, "/api/v1/users/password/reset").permitAll().
+            antMatchers(HttpMethod.POST, "/api/v1/users/password/email").permitAll().
+            antMatchers(HttpMethod.POST, "/api/v1/users/email/verify").permitAll().
+            antMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll().
+            anyRequest().authenticated().and().
+            addFilterBefore(aFilter, UsernamePasswordAuthenticationFilter.class).
+            addFilterBefore(gFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
