@@ -55,15 +55,9 @@ services:
     depends_on:
       - mongo
     environment:
-      LOG_LEVEL: "DEBUG"
-      MANAGEMENT_ENDPOINTS: "*"
-      PROFILE: "dev"
-      CLIENT_ID: "placeholder"
-      MAIL_USERNAME: "placeholder"
-      MAIL_PASSWORD: "placeholder"
-      MONGO_HOST: "mongo"
-      MONGO_USER: "mongo"
-      MONGO_PASSWORD: "password"
+      google_client_id: "google_client_id"
+      smtp_username: "username"
+      smtp_password: "password"
 networks:
   spring-network:
     driver: bridge
