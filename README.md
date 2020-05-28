@@ -19,7 +19,7 @@ maven
 ````
 java jdk
 ````
-openjdk-11
+openjdk-8
 ````
 
 generate jar
