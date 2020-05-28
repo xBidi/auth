@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-docker volume create db-data
-docker volume create grafana-data
 docker-compose build
 docker-compose down
 docker-compose up -d
