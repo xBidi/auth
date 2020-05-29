@@ -40,8 +40,8 @@ import java.util.List;
             return;
         }
         try {
-            Driver driver = new Driver("http://localhost:8080/api/v1");
-            String tokenInfo = driver.userInfo(token);
+            Driver driver = new Driver("http://auth:8080/api/v1");
+            String tokenInfo = driver.tokenInfo(token);
             ObjectMapper objectMapper = new ObjectMapper();
             TokenInfoJwtOutputDto tokenInfoJwtOutputDto =
                 objectMapper.readValue(tokenInfo, TokenInfoJwtOutputDto.class);
