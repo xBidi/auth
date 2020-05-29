@@ -33,8 +33,8 @@ def enable_stout(o_stdout, o_file):
   sys.stdout = o_stdout
 
 def get_oauth2_token():
-  CLIENT_ID = '<client_id>'            
-  CLIENT_SECRET = '<client_secret>' 
+  CLIENT_ID = '<client_id>'
+  CLIENT_SECRET = '<client_secret>'
   SCOPE ='profile email' 
  
   o_stdout, o_file = disable_stout()
