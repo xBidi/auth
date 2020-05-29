@@ -44,9 +44,3 @@ heroku ps:scale web=1
 heroku open
 heroku logs --tail
 ````
-Driver example for external apps
-````
-Driver driver = new Driver("http://localhost:8080/api/v1");
-String response = driver.login("user", "user", "password");
-System.out.println(response);
-````

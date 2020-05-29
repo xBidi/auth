@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.spring.server.security;
 
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
