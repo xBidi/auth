@@ -1,5 +1,6 @@
-package com.spring.server.model.dto;
+package com.spring.server.security;
 
+import com.spring.server.model.dto.TokenInfoOutputDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 

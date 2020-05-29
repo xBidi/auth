@@ -1,8 +1,6 @@
 package com.spring.server.security;
 
-import com.spring.server.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @EnableWebSecurity @Slf4j public class DriverWebSecurity extends WebSecurityConfigurerAdapter {
 
-    @Autowired AuthService authService;
 
     @Override protected void configure(HttpSecurity http) throws Exception {
         log.info("starting configuration");

@@ -1,4 +1,4 @@
-package com.spring.server.model.dto;
+package com.spring.server.security;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
