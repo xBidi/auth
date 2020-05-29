@@ -13,6 +13,7 @@ services:
       - grafana-data:/var/lib/grafana grafana/grafana
     depends_on:
       - prometheus
+    restart: always
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -28,6 +29,7 @@ services:
       - ./integration/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     depends_on:
       - spring
+    restart: always
   mongo:
     container_name: mongo
     image: mongo
@@ -42,6 +44,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "mongo"
       MONGO_INITDB_ROOT_PASSWORD: "password"
+    restart: always
   spring:
     container_name: spring
     image: spring
@@ -60,6 +63,7 @@ services:
       google_client_id: "google_client_id"
       smtp_username: "username"
       smtp_password: "password"
+    restart: always
 networks:
   spring-network:
 volumes:
