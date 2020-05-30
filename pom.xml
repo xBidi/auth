@@ -23,6 +23,12 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/io.github.kaiso.relmongo/relmongo -->
+        <dependency>
+            <groupId>io.github.kaiso.relmongo</groupId>
+            <artifactId>relmongo</artifactId>
+            <version>3.3.3</version>
+        </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>

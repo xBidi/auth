@@ -1,5 +1,9 @@
 package com.spring.server.model.entity;
 
+import io.github.kaiso.relmongo.annotation.CascadeType;
+import io.github.kaiso.relmongo.annotation.FetchType;
+import io.github.kaiso.relmongo.annotation.JoinProperty;
+import io.github.kaiso.relmongo.annotation.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,8 +24,8 @@ import java.util.regex.Pattern;
  *
  * @author diegotobalina
  */
-@Getter @Setter @NoArgsConstructor @Document(collection = "spring_user") @ToString
-public class User extends Auditable{
+@Getter @Setter @NoArgsConstructor @Document(collection = "spring_user") @ToString public class User
+    extends Auditable {
 
     @Id private String id;
     @Indexed(unique = true) private String username;
@@ -32,7 +36,9 @@ public class User extends Auditable{
     private List<SessionToken> sessionTokens = new ArrayList<>();
     private List<ResetPasswordToken> resetPasswordTokens = new ArrayList<>();
     private List<VerifyEmailToken> verifyEmailTokens = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.NONE) @JoinProperty(name = "roles")
     private List<Role> roles = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.NONE) @JoinProperty(name = "scopes")
     private List<Scope> scopes = new ArrayList<>();
 
     public User(String username, String email, String password, Boolean emailVerified,

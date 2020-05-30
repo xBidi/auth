@@ -1,5 +1,6 @@
 package com.spring.server.config;
 
+import io.github.kaiso.relmongo.config.EnableRelMongo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import org.springframework.data.mongodb.core.index.MongoPersistentEntityIndexRes
 import org.springframework.data.mongodb.core.mapping.*;
 
 
-@Slf4j @RequiredArgsConstructor @Configuration public class MongoConfiguration {
+@Slf4j @RequiredArgsConstructor @Configuration @EnableRelMongo public class MongoConfiguration {
 
     private final MongoTemplate mongoTemplate;
 

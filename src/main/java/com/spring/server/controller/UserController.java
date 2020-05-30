@@ -22,8 +22,8 @@ import java.util.List;
  *
  * @author diegotobalina
  */
-@RestController @RequestMapping("api/v1/users")
-@ResponseStatus(HttpStatus.OK) @Slf4j @Validated public class UserController {
+@RestController @RequestMapping("api/v1/users") @ResponseStatus(HttpStatus.OK) @Slf4j @Validated
+public class UserController {
 
     @Autowired UserService userService;
 
@@ -61,6 +61,7 @@ import java.util.List;
     @ApiOperation(value = "envia un correo para verificar el email", notes = "")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
+    @PreAuthorize("hasRole('USER') and hasPermission('hasAccess','UPDATE_USER')")
     @PostMapping("email") @ResponseStatus(HttpStatus.NO_CONTENT) public void sendVerifyEmailEmail(
         @RequestHeader("Authorization") @JwtTokenConstraint String authorization,
         Principal principal) throws Exception {
