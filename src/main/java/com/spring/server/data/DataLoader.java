@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -20,7 +21,7 @@ import java.util.List;
  *
  * @author diegotobalina
  */
-@Component @Slf4j public class DataLoader implements ApplicationRunner {
+@Component @Slf4j @Profile("dev") public class DataLoader implements ApplicationRunner {
 
     @Autowired RoleRepository roleRepository;
     @Autowired ScopeRepository scopeRepository;
