@@ -3,7 +3,7 @@ package com.spring.server.controller;
 import com.spring.server.model.dto.*;
 import com.spring.server.model.validator.JwtTokenConstraint;
 import com.spring.server.model.validator.TokenConstraint;
-import com.spring.server.service.AuthService;
+import com.spring.server.service.interfaces.AuthService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,57 +23,57 @@ import java.security.Principal;
  *
  * @author diegotobalina
  */
-@RestController @RequestMapping("api/v1/oauth2")
-@ResponseStatus(HttpStatus.OK) @Slf4j @Validated public class AuthController {
+@RestController @RequestMapping("api/v1/oauth2") @ResponseStatus(HttpStatus.OK)
+@Api(tags = "oauth2") @Slf4j @Validated public class AuthController {
 
-    @Autowired AuthService authService;
-
+    @Autowired private AuthService authService;
 
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Created"),
         @ApiResponse(code = 401, message = "Invalid credentials")})
-    @ApiOperation(value = "Login", notes = "") @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("login")
-    public LoginOutputDto login(@RequestBody @Valid LoginInputDto loginInputDto) throws Exception {
+    @ApiOperation(value = "Login", notes = "Inicia sesión con el nombre de usuario o correo y la contraseña ")
+    @ResponseStatus(HttpStatus.CREATED) @PostMapping("login")
+    public LoginOutputDto login(@RequestBody @Valid final LoginInputDto loginInputDto)
+        throws Exception {
         return this.authService.login(loginInputDto);
     }
 
-    @ApiOperation(value = "Logout", notes = "") @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("logout") public void logout(@RequestBody @Valid LogoutInputDto logoutInputDto) {
+    @ApiOperation(value = "Logout", notes = "Cierra una sesión activa mendiante su token")
+    @ResponseStatus(HttpStatus.NO_CONTENT) @DeleteMapping("logout")
+    public void logout(@RequestBody @Valid final LogoutInputDto logoutInputDto) {
         this.authService.logout(logoutInputDto);
     }
 
-    @ApiOperation(value = "Access", notes = "") @ResponseStatus(HttpStatus.OK)
-    @PostMapping("access")
-    public AccessOutputDto access(@RequestBody @Valid AccessInputDto accessInputDto)
+    @ApiOperation(value = "Access", notes = "Obtiene un token de acceso mediante el token recibido en la llamada login")
+    @ResponseStatus(HttpStatus.OK) @PostMapping("access")
+    public AccessOutputDto access(@RequestBody @Valid final AccessInputDto accessInputDto)
         throws Exception {
         return this.authService.access(accessInputDto);
     }
 
-    @ApiOperation(value = "Token info", notes = "Returns token information, valid tokens: Bearer, Jwt")
-    @ResponseStatus(HttpStatus.OK) @GetMapping("tokenInfo")
-    public TokenInfoOutputDto tokenInfo(@RequestParam(name = "token") @TokenConstraint String token)
-        throws Exception {
+    @ApiOperation(value = "Token info", notes = "Devuelve la información relacionada con un token, puede ser de sesión, de acceso o de google")
+    @ResponseStatus(HttpStatus.OK) @GetMapping("tokenInfo") public TokenInfoOutputDto tokenInfo(
+        @RequestParam(name = "token") @TokenConstraint final String token) throws Exception {
         return this.authService.tokenInfo(token);
     }
 
-    @ApiOperation(value = "User info", notes = "") @ResponseStatus(HttpStatus.OK)
-    @ApiImplicitParams({
+    @ApiOperation(value = "User info", notes = "Devuelve la información de un usuario relacionado con un token, puede ser de acceso o de google")
+    @ResponseStatus(HttpStatus.OK) @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
     @GetMapping("userInfo") public UserInfoOutputDto userInfo(
-        @RequestHeader("Authorization") @JwtTokenConstraint String authorization,
-        Principal principal) throws Exception {
-        return this.authService.findByPrincipal(principal);
+        @RequestHeader("Authorization") @JwtTokenConstraint final String authorization,
+        final Principal principal) {
+        return this.authService.userInfo(principal);
     }
 
     @ExceptionHandler({Exception.class}) @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    private void exceptionHandler(HttpServletRequest request, HttpServletResponse response,
-        Exception ex) throws IOException {
+    private void exceptionHandler(final HttpServletRequest request,
+        final HttpServletResponse response, final Exception ex) throws IOException {
         response.sendError(HttpStatus.UNAUTHORIZED.value(), "invalid credentials");
     }
 
     @ExceptionHandler({ConstraintViolationException.class}) @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private void constraintViolationExceptionHandler(HttpServletRequest request,
-        HttpServletResponse response, Exception ex) throws IOException {
+    private void constraintViolationExceptionHandler(final HttpServletRequest request,
+        final HttpServletResponse response, final Exception ex) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 }

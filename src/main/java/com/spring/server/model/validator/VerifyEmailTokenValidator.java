@@ -1,5 +1,7 @@
 package com.spring.server.model.validator;
 
+import com.spring.server.util.RegexUtil;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -10,14 +12,7 @@ public class VerifyEmailTokenValidator
     }
 
     @Override public boolean isValid(String verifyEmailToken, ConstraintValidatorContext cxt) {
-        if (verifyEmailToken == null || verifyEmailToken.isEmpty()) {
-            return false;
-        }
-        String regex = "[0-9]{13}-[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}";
-        if (!verifyEmailToken.matches(regex)) {
-            return false;
-        }
-        return true;
+        return RegexUtil.isBasicToken(verifyEmailToken);
     }
 
 }

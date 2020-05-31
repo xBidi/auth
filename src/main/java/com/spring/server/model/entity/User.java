@@ -41,6 +41,13 @@ import java.util.regex.Pattern;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.NONE) @JoinProperty(name = "scopes")
     private List<Scope> scopes = new ArrayList<>();
 
+
+    public User(String userId, List<Role> roles, List<Scope> scopes) {
+        this.setId(userId);
+        this.setRoles(roles);
+        this.setScopes(scopes);
+    }
+
     public User(String username, String email, String password, Boolean emailVerified,
         List<Role> roles, List<Scope> scopes) {
         this.username = username;

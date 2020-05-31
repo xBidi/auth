@@ -6,6 +6,8 @@ import com.spring.server.model.entity.SessionToken;
 import com.spring.server.model.entity.User;
 import com.spring.server.model.entity.VerifyEmailToken;
 import com.spring.server.repository.UserRepository;
+import com.spring.server.service.impl.AuthServiceImpl;
+import com.spring.server.service.impl.MailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,7 +33,7 @@ import java.util.stream.Collectors;
     @Autowired SessionTokenService sessionTokenService;
     @Autowired RoleService roleService;
     @Autowired ScopeService scopeService;
-    @Autowired AuthService authService;
+    @Autowired AuthServiceImpl authServiceImpl;
     @Autowired ResetPasswordTokenService resetPasswordTokenService;
     @Autowired VerifyEmailTokenService verifyEmailTokenService;
 
@@ -84,7 +86,7 @@ import java.util.stream.Collectors;
         user = userRepository.save(user);
         VerifyEmailToken verifyEmailToken = verifyEmailTokenService.generateToken();
         addVerifyEmailToken(user, verifyEmailToken);
-        mailService.mailNewUser(user.getEmail(), verifyEmailToken.getToken());
+        mailServiceImpl.mailNewUser(user.getEmail(), verifyEmailToken.getToken());
         return user;
     }
 
@@ -210,7 +212,7 @@ import java.util.stream.Collectors;
 
     public void updatePassword(Principal principal, UpdateUserPasswordDto updateUserPasswordDto)
         throws Exception {
-        String loggedUserId = authService.findByPrincipal(principal).getUserId();
+        String loggedUserId = authServiceImpl.findByPrincipal(principal).getUserId();
         User user = findById(loggedUserId);
         String newPassword = updateUserPasswordDto.getNewPassword();
         String oldPassword = updateUserPasswordDto.getOldPassword();
@@ -221,7 +223,7 @@ import java.util.stream.Collectors;
         }
     }
 
-    @Autowired private MailService mailService;
+    @Autowired private MailServiceImpl mailServiceImpl;
 
     public void sendResetPasswordEmail(SendResetPasswordEmailDto sendResetPasswordEmailDto)
         throws IOException, MessagingException {
@@ -232,7 +234,7 @@ import java.util.stream.Collectors;
         }
         ResetPasswordToken resetPasswordToken = resetPasswordTokenService.generateToken();
         addResetPasswordToken(user, resetPasswordToken);
-        mailService.mailResetPassword(email, resetPasswordToken.getToken());
+        mailServiceImpl.mailResetPassword(email, resetPasswordToken.getToken());
     }
 
 
@@ -261,7 +263,7 @@ import java.util.stream.Collectors;
     }
 
     public void sendVerifyEmailEmail(Principal principal) throws Exception {
-        String userId = authService.findByPrincipal(principal).getUserId();
+        String userId = authServiceImpl.findByPrincipal(principal).getUserId();
         User user = findById(userId);
         if (user == null || user.getEmailVerified()) {
             return; // invalid user
@@ -269,7 +271,7 @@ import java.util.stream.Collectors;
         String email = user.getEmail();
         VerifyEmailToken verifyEmailToken = verifyEmailTokenService.generateToken();
         addVerifyEmailToken(user, verifyEmailToken);
-        mailService.mailVerifyEmail(email, verifyEmailToken.getToken());
+        mailServiceImpl.mailVerifyEmail(email, verifyEmailToken.getToken());
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -19,7 +19,6 @@ import java.security.Principal;
  */
 @Configuration @EnableSwagger2 @Profile("dev") @Slf4j public class SwaggerConfig {
     @Bean public Docket api() {
-        log.info("new Docket()");
         return new Docket(DocumentationType.SWAGGER_2).
             useDefaultResponseMessages(false).
             ignoredParameterTypes(Principal.class).

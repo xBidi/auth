@@ -1,6 +1,7 @@
 package com.spring.server.security;
 
-import com.spring.server.service.AuthService;
+import com.spring.server.service.GoogleService;
+import com.spring.server.service.impl.AuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @EnableWebSecurity @Slf4j public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-    @Autowired AuthService authService;
+    @Autowired AuthServiceImpl authServiceImpl;
+    @Autowired GoogleService googleService;
+    @Value("${server.auth.secret-key}") private String secretKey;
 
     @Override protected void configure(HttpSecurity http) throws Exception {
         log.info("starting configuration");
@@ -37,8 +40,8 @@ import javax.servlet.http.HttpServletResponse;
                 rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
             });
 
-        AuthenticationFilter aFilter = new AuthenticationFilter(authService);
-        GoogleAuthenticationFilter gFilter = new GoogleAuthenticationFilter(authService);
+        AuthenticationFilter aFilter = new AuthenticationFilter(secretKey);
+        GoogleAuthenticationFilter gFilter = new GoogleAuthenticationFilter(googleService);
 
         http.antMatcher("/api/v1/**").
             authorizeRequests().

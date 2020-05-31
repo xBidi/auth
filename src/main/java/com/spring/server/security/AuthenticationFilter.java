@@ -2,8 +2,12 @@ package com.spring.server.security;
 
 import com.spring.server.model.entity.Role;
 import com.spring.server.model.entity.User;
-import com.spring.server.service.AuthService;
+import com.spring.server.service.impl.AuthServiceImpl;
+import com.spring.server.util.AuthenticationUtil;
+import com.spring.server.util.RegexUtil;
+import com.spring.server.util.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.el.parser.Token;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,52 +29,28 @@ import java.util.List;
  */
 @Slf4j public class AuthenticationFilter extends OncePerRequestFilter {
 
-    private final AuthService authService;
+    private final String secretKey;
 
-    public AuthenticationFilter(AuthService authService) {
-        this.authService = authService;
+    public AuthenticationFilter(String secretKey) {
+        this.secretKey = secretKey;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
-        if (token == null || token.isEmpty()) {
-            log.debug("no token");
-            chain.doFilter(request, response);
+        var authenticationUtil = new AuthenticationUtil(request, response, chain).invoke();
+        if (!authenticationUtil.isValid()) {
             return;
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            log.debug("already authenticated");
-            chain.doFilter(request, response);
-            return;
-        }
-        token = token.replace("Bearer ", "");
         try {
-            User user = authService.validateJwt(token);
-            List<SimpleGrantedAuthority> simpleGrantedAuthorities =
-                this.getSimpleGrantedAuthorities(user.getRoles());
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(user, user.getScopes(),
-                    simpleGrantedAuthorities);
-            SecurityContextHolder.getContext()
-                .setAuthentication(usernamePasswordAuthenticationToken);
-            log.debug("authentication ok: {}", user.toString());
+            final String jwtWithPrefix = authenticationUtil.getJwtWithPrefix();
+            final String jwtWithoutPrefix = TokenUtil.removePrefix(jwtWithPrefix);
+            User user = TokenUtil.getUserFromJwt(jwtWithoutPrefix, secretKey);
+            authenticationUtil.authenticate(user);
         } catch (Exception ex) {
             log.warn("exception: {}", ex.getStackTrace());
         } finally {
             chain.doFilter(request, response);
         }
-
     }
-
-    private List<SimpleGrantedAuthority> getSimpleGrantedAuthorities(List<Role> roles) {
-        List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
-        for (Role role : roles) {
-            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
-        }
-        return simpleGrantedAuthorities;
-    }
-
 }

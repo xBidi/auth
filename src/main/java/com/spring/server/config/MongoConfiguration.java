@@ -18,6 +18,8 @@ import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.data.mongodb.core.index.MongoPersistentEntityIndexResolver;
 import org.springframework.data.mongodb.core.mapping.*;
 
+import java.util.Collection;
+
 
 @Slf4j @RequiredArgsConstructor @Configuration @EnableRelMongo public class MongoConfiguration {
 
@@ -27,31 +29,28 @@ import org.springframework.data.mongodb.core.mapping.*;
 
     @Bean @Autowired @ConditionalOnExpression("'${mongo.transactions}'=='enabled'")
     MongoTransactionManager mongoTransactionManager(MongoDbFactory dbFactory) {
-        log.info("new MongoTransactionManager()");
         return new MongoTransactionManager(dbFactory);
     }
 
     @EventListener(ApplicationReadyEvent.class) public void initIndicesAfterStartup() {
-
-        log.info("Mongo InitIndicesAfterStartup init");
-        long init = System.currentTimeMillis();
-        MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext =
-            this.mongoConverter.getMappingContext();
-        if (mappingContext instanceof MongoMappingContext) {
-            MongoMappingContext mongoMappingContext = (MongoMappingContext) mappingContext;
-            for (BasicMongoPersistentEntity<?> persistentEntity : mongoMappingContext
-                .getPersistentEntities()) {
-                Class<?> clazz = persistentEntity.getType();
-                if (clazz.isAnnotationPresent(Document.class)) {
-                    MongoPersistentEntityIndexResolver resolver =
-                        new MongoPersistentEntityIndexResolver(mongoMappingContext);
-
-                    IndexOperations indexOps = mongoTemplate.indexOps(clazz);
-                    resolver.resolveIndexFor(clazz).forEach(indexOps::ensureIndex);
-                }
-            }
+        var mappingContext = getMappingContext();
+        if (!(mappingContext instanceof MongoMappingContext)) {
+            return;
         }
-        log.info("Mongo InitIndicesAfterStartup take: {} ms", (System.currentTimeMillis() - init));
+        MongoMappingContext mongoMappingContext = (MongoMappingContext) mappingContext;
+        var persistentEntities = mongoMappingContext.getPersistentEntities();
+        persistentEntities.forEach(persistentEntity -> {
+            var persistentEntityType = persistentEntity.getType();
+            if (persistentEntityType.isAnnotationPresent(Document.class)) {
+                var resolver = new MongoPersistentEntityIndexResolver(mongoMappingContext);
+                IndexOperations indexOps = mongoTemplate.indexOps(persistentEntityType);
+                resolver.resolveIndexFor(persistentEntityType).forEach(indexOps::ensureIndex);
+            }
+        });
+    }
+
+    private MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> getMappingContext() {
+        return this.mongoConverter.getMappingContext();
     }
 
 

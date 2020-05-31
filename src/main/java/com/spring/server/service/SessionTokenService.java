@@ -2,6 +2,7 @@ package com.spring.server.service;
 
 import com.spring.server.model.entity.SessionToken;
 import com.spring.server.repository.SessionTokenRepository;
+import com.spring.server.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 
     @Autowired SessionTokenRepository sessionTokenRepository;
-    @Autowired private UserService userService;
+    @Autowired private UserServiceImpl userServiceImpl;
 
     public SessionToken generateToken() {
         String randomString = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
@@ -39,8 +40,17 @@ import java.util.UUID;
         return optionalToken.get();
     }
 
+    public SessionToken findValidByToken(String token) throws Exception {
+        final SessionToken sessionToken = this.findByToken(token);
+        if (!(this.isValid(sessionToken))) {
+            this.removeToken(sessionToken);
+            throw new Exception("invalid token");
+        }
+        return sessionToken;
+    }
+
     public boolean isValid(SessionToken sessionToken) {
-        if (sessionToken.getExpirationDate().getTime() < System.currentTimeMillis()) {
+        if (sessionToken.getExpiration().getTime() < System.currentTimeMillis()) {
             return false;
         }
         return true;
@@ -48,7 +58,7 @@ import java.util.UUID;
 
     @Transactional(rollbackFor = Exception.class)
     public void removeToken(SessionToken sessionToken) {
-        this.userService.removeSessionToken(sessionToken.getToken());
+        this.userServiceImpl.removeSessionToken(sessionToken.getToken());
         this.sessionTokenRepository.deleteById(sessionToken.getId());
     }
 
@@ -59,7 +69,7 @@ import java.util.UUID;
 
     public void refreshToken(String tokenString) {
         SessionToken sessionToken = this.findByToken(tokenString);
-        sessionToken.setExpirationDate(this.getExpirationDate());
+        sessionToken.setExpiration(this.getExpirationDate());
         this.sessionTokenRepository.save(sessionToken);
     }
 

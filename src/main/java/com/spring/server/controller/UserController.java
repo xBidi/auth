@@ -2,7 +2,8 @@ package com.spring.server.controller;
 
 import com.spring.server.model.dto.*;
 import com.spring.server.model.validator.JwtTokenConstraint;
-import com.spring.server.service.UserService;
+import com.spring.server.service.interfaces.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -22,64 +23,66 @@ import java.util.List;
  *
  * @author diegotobalina
  */
-@RestController @RequestMapping("api/v1/users") @ResponseStatus(HttpStatus.OK) @Slf4j @Validated
-public class UserController {
+@RestController @RequestMapping("api/v1/users") @Api(tags = "users") @ResponseStatus(HttpStatus.OK)
+@Slf4j @Validated public class UserController {
 
-    @Autowired UserService userService;
+    @Autowired private UserService userService;
 
-    @ApiOperation(value = "Register a new user in the database", notes = "")
+    @ApiOperation(value = "Register", notes = "Registra un nuevo usuario en la base de datos")
     @ResponseStatus(HttpStatus.CREATED) @PostMapping("register")
     public RegisterOutputDto register(@RequestBody @Valid RegisterInputDto registerInputDto)
         throws Exception {
         return this.userService.register(registerInputDto);
     }
 
-    @ApiOperation(value = "Update user password", notes = "") @ApiImplicitParams({
+    @ApiOperation(value = "Update password", notes = "Actualiza la contraseña del usuario relacionado con el token de acceso")
+    @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
     @PreAuthorize("hasRole('USER') and hasPermission('hasAccess','MODIFY_USER')")
     @PutMapping("password") @ResponseStatus(HttpStatus.NO_CONTENT) public void updatePassword(
-        @RequestHeader("Authorization") @JwtTokenConstraint String authorization,
-        Principal principal, @RequestBody @Valid UpdateUserPasswordDto updateUserPasswordDto)
-        throws Exception {
+        @RequestHeader("Authorization") @JwtTokenConstraint final String authorization,
+        final Principal principal,
+        @RequestBody @Valid final UpdateUserPasswordDto updateUserPasswordDto) throws Exception {
         this.userService.updatePassword(principal, updateUserPasswordDto);
     }
 
-    @ApiOperation(value = "recupera la contraseña usando el token recibido por correo", notes = "")
+    @ApiOperation(value = "Reset password with email token", notes = "Permite cambiar la contraseña de un usuario mediante el token que ha recibido por correo")
     @PutMapping("password/reset") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetPasswordWithEmail(
-        @RequestBody @Valid ResetPasswordWithEmailDto resetPasswordWithEmailDto) {
+        @RequestBody @Valid final ResetPasswordWithEmailDto resetPasswordWithEmailDto) {
         this.userService.resetPasswordWithEmail(resetPasswordWithEmailDto);
     }
 
-    @ApiOperation(value = "envia un correo para recuperar la contraseña", notes = "")
+    @ApiOperation(value = "Send reset password token to mail", notes = "Envía un correo con un token para recuperar la contraseña")
     @PostMapping("password/email") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void sendResetPasswordEmail(
-        @RequestBody @Valid SendResetPasswordEmailDto sendResetPasswordEmailDto) throws Exception {
+        @RequestBody @Valid final SendResetPasswordEmailDto sendResetPasswordEmailDto)
+        throws Exception {
         this.userService.sendResetPasswordEmail(sendResetPasswordEmailDto);
     }
 
-    @ApiOperation(value = "envia un correo para verificar el email", notes = "")
+    @ApiOperation(value = "Send validate email token to email", notes = "Envía un correo con un token para validar el email")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
-    @PreAuthorize("hasRole('USER') and hasPermission('hasAccess','UPDATE_USER')")
+    @PreAuthorize("hasRole('USER') and hasPermission('hasAccess','MODIFY_USER')")
     @PostMapping("email") @ResponseStatus(HttpStatus.NO_CONTENT) public void sendVerifyEmailEmail(
-        @RequestHeader("Authorization") @JwtTokenConstraint String authorization,
-        Principal principal) throws Exception {
+        @RequestHeader("Authorization") @JwtTokenConstraint final String authorization,
+        final Principal principal) throws Exception {
         this.userService.sendVerifyEmailEmail(principal);
     }
 
-    @ApiOperation(value = "verifica el correo electronico", notes = "") @PostMapping("email/verify")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void verifyEmailEmail(@Valid @RequestBody VerifyEmailDto verifyEmailDto) {
+    @ApiOperation(value = "Verify email with email token", notes = "Verifica el correo electrónico mediante el token que ha recibido por correo")
+    @PostMapping("email/verify") @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void verifyEmailEmail(@Valid @RequestBody final VerifyEmailDto verifyEmailDto) {
         this.userService.verifyEmail(verifyEmailDto);
     }
 
-    @ApiOperation(value = "list all database users", notes = "ONLY ADMINS WITH READ+ SCOPE")
+    @ApiOperation(value = "Get all users", notes = "Devuelve todos los usuarios en la base de datos")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "jwt", dataType = "string", paramType = "header", required = true)})
     @GetMapping @PreAuthorize("hasRole('ADMIN') and hasPermission('hasAccess','READ')")
     public List<UserInfoOutputDto> users(
-        @RequestHeader("Authorization") @JwtTokenConstraint String authorization) {
+        @RequestHeader("Authorization") @JwtTokenConstraint final String authorization) {
         return userService.findAll();
     }
 

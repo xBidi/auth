@@ -17,16 +17,16 @@ import java.util.Date;
  * @author diegotobalina
  */
 @NoArgsConstructor @Getter @Setter @ToString @Document(collection = "spring_session_token")
-public class SessionToken extends Auditable{
+public class SessionToken extends Auditable {
 
     @Id private String id;
     @Indexed private String token;
-    private Date expeditionDate;
-    private Date expirationDate;
+    private Date issuedAt;
+    private Date expiration;
 
-    public SessionToken(String token, Date expeditionDate, Date expirationDate) {
+    public SessionToken(String token, Date issuedAt, Date expiration) {
         this.token = token;
-        this.expeditionDate = expeditionDate;
-        this.expirationDate = expirationDate;
+        this.issuedAt = issuedAt;
+        this.expiration = expiration;
     }
 }

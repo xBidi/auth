@@ -1,5 +1,7 @@
 package com.spring.server.model.validator;
 
+import com.spring.server.util.RegexUtil;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -9,14 +11,7 @@ public class JwtTokenValidator implements ConstraintValidator<JwtTokenConstraint
     }
 
     @Override public boolean isValid(String jwt, ConstraintValidatorContext cxt) {
-        if (jwt == null || jwt.isEmpty()) {
-            return false;
-        }
-        String regex = "Bearer [A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$";
-        if (!jwt.matches(regex)) {
-            return false;
-        }
-        return true;
+        return RegexUtil.isJwt(jwt);
     }
 
 }

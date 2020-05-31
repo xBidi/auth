@@ -1,5 +1,8 @@
 package com.spring.server.model.validator;
 
+import com.spring.server.util.RegexUtil;
+import org.apache.commons.lang3.StringUtils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -9,14 +12,9 @@ public class UsernameValidator implements ConstraintValidator<UsernameConstraint
     }
 
     @Override public boolean isValid(String username, ConstraintValidatorContext cxt) {
-        if (username == null || username.isEmpty()) {
+        if (StringUtils.isBlank(username))
             return false;
-        }
-        String regex = "[a-zA-Z0-9\\._\\-]{3,15}";
-        if (!username.matches(regex)) {
-            return false;
-        }
-        return true;
+        return RegexUtil.isValidUsername(username);
     }
 
 }

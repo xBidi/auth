@@ -30,9 +30,9 @@ services:
     depends_on:
       - mongo
     environment:
-      google_client_id: "google_client_id"
-      smtp_username: "username"
-      smtp_password: "password"
+      GOOGLE_CLIENT_ID: "google_client_id"
+      SMTP_USERNAME: "username"
+      SMTP_PASSWORD: "password"
     restart: always
 networks:
   spring:

@@ -1,5 +1,7 @@
 package com.spring.server.model.validator;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -9,13 +11,9 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
     }
 
     @Override public boolean isValid(String password, ConstraintValidatorContext cxt) {
-        if (password == null || password.isEmpty()) {
+        if (StringUtils.isBlank(password))
             return false;
-        }
-        if (password.length() < 6 || password.length() > 254) {
-            return false;
-        }
-        return true;
+        return (password.length() > 6 && password.length() < 254);
     }
 
 }

@@ -2,6 +2,7 @@ package com.spring.server.service;
 
 import com.spring.server.model.entity.ResetPasswordToken;
 import com.spring.server.repository.ResetPasswordTokenRepository;
+import com.spring.server.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 
     @Autowired ResetPasswordTokenRepository resetPasswordTokenRepository;
-    @Autowired private UserService userService;
+    @Autowired private UserServiceImpl userServiceImpl;
 
     public ResetPasswordToken generateToken() {
         String randomString = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
@@ -50,7 +51,7 @@ import java.util.UUID;
 
     @Transactional(rollbackFor = Exception.class)
     public void removeToken(ResetPasswordToken resetPasswordToken) {
-        this.userService.removeResetPasswordToken(resetPasswordToken.getToken());
+        this.userServiceImpl.removeResetPasswordToken(resetPasswordToken.getToken());
         this.resetPasswordTokenRepository.deleteById(resetPasswordToken.getId());
     }
 
