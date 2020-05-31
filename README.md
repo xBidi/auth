@@ -1,41 +1,36 @@
 # spring
-Project template for java spring
+Plantilla para proyectos de Spring
 
-deployed application
+Aplicación desplegada
 ````
 https://xbidi-spring.herokuapp.com/swagger-ui.html
 ````
-code style
+Code formatter
 ````
 https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml
 ````
-package manager
+Gestor de dependencias
 ````
 maven
 ````
-java jdk
+Instalar java ubuntu
 ````
-openjdk-8
-````
-
-generate jar
-````
-mvn install
+apt-get install openjdk-11-jdk
 ````
 
-docker deploy
+Lanzar aplicación en docker
 ````
 sh deploy.sh
 ````
 
-launch server on heroku
+Lanzar aplicación en heroku
 ````
 heroku login
 heroku create
-heroku config:set google_client_id=<client_id>
-heroku config:set mongodb_uri=<mongodb_uri>
-heroku config:set smtp_password=<smtp_password>
-heroku config:set smtp_username=<smtp_username>
+heroku config:set GOOGLE_CLIENT_ID=<client_id>
+heroku config:set MONGODB_URI=<mongodb_uri>
+heroku config:set SMTP_USERNAME=<smtp_password>
+heroku config:set SMTP_PASSWORD=<smtp_username>
 git push heroku master
 heroku ps:scale web=1
 heroku open
