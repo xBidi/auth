@@ -11,15 +11,15 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface UserRepository extends MongoRepository<User, String> {
-    Optional<User> findByUsername(String username);
+@Repository
+public interface UserRepository extends MongoRepository<User, String> {
+  Optional<User> findByUsername(String username);
 
-    Optional<User> findByEmail(String email);
+  Optional<User> findByEmail(String email);
 
-    Optional<User> findBySessionTokensToken(String token);
+  Optional<User> findBySessionTokensToken(String token);
 
-    Optional<User> findByResetPasswordTokensToken(String token);
+  Optional<User> findByResetPasswordTokensToken(String token);
 
-    Optional<User> findByVerifyEmailTokensToken(String token);
-
+  Optional<User> findByVerifyEmailTokensToken(String token);
 }

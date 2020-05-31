@@ -7,11 +7,11 @@ import javax.validation.ConstraintValidatorContext;
 
 public class SessionTokenValidator implements ConstraintValidator<SessionTokenConstraint, String> {
 
-    @Override public void initialize(SessionTokenConstraint sessionToken) {
-    }
+  @Override
+  public void initialize(SessionTokenConstraint sessionToken) {}
 
-    @Override public boolean isValid(String sessionToken, ConstraintValidatorContext cxt) {
-        return RegexUtil.isBasicToken(sessionToken);
-    }
-
+  @Override
+  public boolean isValid(String sessionToken, ConstraintValidatorContext cxt) {
+    return RegexUtil.isBasicToken(sessionToken);
+  }
 }

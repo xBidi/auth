@@ -5,15 +5,16 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 
-@Service public interface AuthService {
+@Service
+public interface AuthService {
 
-    LoginOutputDto login(final LoginInputDto loginInputDto) throws Exception;
+  LoginOutputDto login(final LoginInputDto loginInputDto) throws Exception;
 
-    void logout(final LogoutInputDto logoutInputDto);
+  void logout(final LogoutInputDto logoutInputDto);
 
-    AccessOutputDto access(final AccessInputDto accessInputDto) throws Exception;
+  AccessOutputDto access(final AccessInputDto accessInputDto) throws Exception;
 
-    TokenInfoOutputDto tokenInfo(final String token) throws Exception;
+  TokenInfoOutputDto tokenInfo(final String token) throws Exception;
 
-    UserInfoOutputDto userInfo(final Principal principal);
+  UserInfoOutputDto userInfo(final Principal principal);
 }

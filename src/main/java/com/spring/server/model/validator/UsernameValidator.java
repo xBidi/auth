@@ -8,13 +8,12 @@ import javax.validation.ConstraintValidatorContext;
 
 public class UsernameValidator implements ConstraintValidator<UsernameConstraint, String> {
 
-    @Override public void initialize(UsernameConstraint contactNumber) {
-    }
+  @Override
+  public void initialize(UsernameConstraint contactNumber) {}
 
-    @Override public boolean isValid(String username, ConstraintValidatorContext cxt) {
-        if (StringUtils.isBlank(username))
-            return false;
-        return RegexUtil.isValidUsername(username);
-    }
-
+  @Override
+  public boolean isValid(String username, ConstraintValidatorContext cxt) {
+    if (StringUtils.isBlank(username)) return false;
+    return RegexUtil.isValidUsername(username);
+  }
 }

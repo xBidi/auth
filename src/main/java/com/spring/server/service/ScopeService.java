@@ -13,15 +13,17 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Service @Slf4j public class ScopeService {
+@Service
+@Slf4j
+public class ScopeService {
 
-    @Autowired ScopeRepository ScopeRepository;
+  @Autowired ScopeRepository ScopeRepository;
 
-      public Scope findByValue(String value) {
-        Optional<Scope> optionalScope = this.ScopeRepository.findByValue(value);
-        if (!optionalScope.isPresent()) {
-            return null;
-        }
-        return optionalScope.get();
+  public Scope findByValue(String value) {
+    Optional<Scope> optionalScope = this.ScopeRepository.findByValue(value);
+    if (!optionalScope.isPresent()) {
+      return null;
     }
+    return optionalScope.get();
+  }
 }

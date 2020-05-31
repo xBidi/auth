@@ -7,13 +7,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-/**
- * @author diegotobalina
- */
-@Configuration @Profile("dev") @Slf4j public class HttpTraceActuatorConfiguration {
+/** @author diegotobalina */
+@Configuration
+@Profile("dev")
+@Slf4j
+public class HttpTraceActuatorConfiguration {
 
-    @Bean public HttpTraceRepository httpTraceRepository() {
-        return new InMemoryHttpTraceRepository();
-    }
-
+  @Bean
+  public HttpTraceRepository httpTraceRepository() {
+    return new InMemoryHttpTraceRepository();
+  }
 }

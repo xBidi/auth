@@ -6,6 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Data public class SendResetPasswordEmailDto {
-    @Email @NotNull @NotBlank private String email;
+@Data
+public class SendResetPasswordEmailDto {
+  @Email @NotNull @NotBlank private String email;
 }

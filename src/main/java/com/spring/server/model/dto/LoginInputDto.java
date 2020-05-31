@@ -15,8 +15,20 @@ import javax.validation.constraints.Email;
  *
  * @author diegotobalina
  */
-@AllArgsConstructor @Getter @Setter @ToString public class LoginInputDto {
-    @ApiModelProperty(example = "user") @UsernameNullableConstraint private String username;
-    @ApiModelProperty(example = "user@user.com") @Email private String email;
-    @ApiModelProperty(example = "password") @PasswordConstraint private String password;
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class LoginInputDto {
+  @ApiModelProperty(example = "user")
+  @UsernameNullableConstraint
+  private String username;
+
+  @ApiModelProperty(example = "user@user.com")
+  @Email
+  private String email;
+
+  @ApiModelProperty(example = "password")
+  @PasswordConstraint
+  private String password;
 }

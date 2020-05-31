@@ -8,11 +8,11 @@ import javax.validation.ConstraintValidatorContext;
 public class VerifyEmailTokenValidator
     implements ConstraintValidator<VerifyEmailTokenConstraint, String> {
 
-    @Override public void initialize(VerifyEmailTokenConstraint sessionToken) {
-    }
+  @Override
+  public void initialize(VerifyEmailTokenConstraint sessionToken) {}
 
-    @Override public boolean isValid(String verifyEmailToken, ConstraintValidatorContext cxt) {
-        return RegexUtil.isBasicToken(verifyEmailToken);
-    }
-
+  @Override
+  public boolean isValid(String verifyEmailToken, ConstraintValidatorContext cxt) {
+    return RegexUtil.isBasicToken(verifyEmailToken);
+  }
 }

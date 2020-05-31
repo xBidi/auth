@@ -14,19 +14,19 @@ import java.util.List;
  */
 public interface UserService {
 
-    RegisterOutputDto register(RegisterInputDto registerInputDto) throws Exception;
+  RegisterOutputDto register(RegisterInputDto registerInputDto) throws Exception;
 
-    List<UserInfoOutputDto> findAll();
+  List<UserInfoOutputDto> findAll();
 
-    void updatePassword(Principal principal, UpdateUserPasswordDto updateUserPasswordDto)
-        throws Exception;
+  void updatePassword(Principal principal, UpdateUserPasswordDto updateUserPasswordDto)
+      throws Exception;
 
-    void resetPasswordWithEmail(ResetPasswordWithEmailDto resetPasswordWithEmailDto);
+  void resetPasswordWithEmail(ResetPasswordWithEmailDto resetPasswordWithEmailDto);
 
-    void sendResetPasswordEmail(SendResetPasswordEmailDto sendResetPasswordEmailDto)
-        throws IOException, MessagingException;
+  void sendResetPasswordEmail(SendResetPasswordEmailDto sendResetPasswordEmailDto)
+      throws IOException, MessagingException;
 
-    void sendVerifyEmailEmail(Principal principal) throws Exception;
+  void sendVerifyEmailEmail(Principal principal) throws Exception;
 
-    void verifyEmail(VerifyEmailDto verifyEmailDto);
+  void verifyEmail(VerifyEmailDto verifyEmailDto);
 }

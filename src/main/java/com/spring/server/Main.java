@@ -10,14 +10,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
  *
  * @author diegotobalina
  */
-@SpringBootApplication @Slf4j @EnableAsync
+@SpringBootApplication
+@Slf4j
+@EnableAsync
 public class Main {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
-    }
-
-
-
-
+  public static void main(String[] args) {
+    SpringApplication.run(Main.class, args);
+  }
 }

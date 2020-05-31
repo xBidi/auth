@@ -19,40 +19,52 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author diegotobalina
  */
-@EnableWebSecurity @Slf4j public class WebSecurity extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+@Slf4j
+public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-    @Autowired AuthServiceImpl authServiceImpl;
-    @Autowired GoogleService googleService;
-    @Value("${server.auth.secret-key}") private String secretKey;
+  @Autowired AuthServiceImpl authServiceImpl;
+  @Autowired GoogleService googleService;
 
-    @Override protected void configure(HttpSecurity http) throws Exception {
-        log.info("starting configuration");
-        http.
-            csrf().
-            disable().
-            sessionManagement().
-            sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+  @Value("${server.auth.secret-key}")
+  private String secretKey;
 
-        http.
-            exceptionHandling().
-            authenticationEntryPoint((req, rsp, e) -> {
-                String message = e.getMessage();
-                rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    log.info("starting configuration");
+    http.csrf()
+        .disable()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+    http.exceptionHandling()
+        .authenticationEntryPoint(
+            (req, rsp, e) -> {
+              String message = e.getMessage();
+              rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
             });
 
-        AuthenticationFilter aFilter = new AuthenticationFilter(secretKey);
-        GoogleAuthenticationFilter gFilter = new GoogleAuthenticationFilter(googleService);
+    AuthenticationFilter aFilter = new AuthenticationFilter(secretKey);
+    GoogleAuthenticationFilter gFilter = new GoogleAuthenticationFilter(googleService);
 
-        http.antMatcher("/api/v1/**").
-            authorizeRequests().
-            antMatchers("/api/v1/oauth2/**").permitAll().
-            antMatchers(HttpMethod.GET, "/api/v1/oauth2/userInfo").authenticated().
-            antMatchers(HttpMethod.PUT, "/api/v1/users/password/reset").permitAll().
-            antMatchers(HttpMethod.POST, "/api/v1/users/password/email").permitAll().
-            antMatchers(HttpMethod.POST, "/api/v1/users/email/verify").permitAll().
-            antMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll().
-            anyRequest().authenticated().and().
-            addFilterBefore(aFilter, UsernamePasswordAuthenticationFilter.class).
-            addFilterBefore(gFilter, UsernamePasswordAuthenticationFilter.class);
-    }
+    http.antMatcher("/api/v1/**")
+        .authorizeRequests()
+        .antMatchers("/api/v1/oauth2/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/api/v1/oauth2/userInfo")
+        .authenticated()
+        .antMatchers(HttpMethod.PUT, "/api/v1/users/password/reset")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/api/v1/users/password/email")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/api/v1/users/email/verify")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/api/v1/users/register")
+        .permitAll()
+        .anyRequest()
+        .authenticated()
+        .and()
+        .addFilterBefore(aFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(gFilter, UsernamePasswordAuthenticationFilter.class);
+  }
 }

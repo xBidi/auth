@@ -9,13 +9,12 @@ import javax.validation.ConstraintValidatorContext;
 public class UsernameNullableValidator
     implements ConstraintValidator<UsernameNullableConstraint, String> {
 
-    @Override public void initialize(UsernameNullableConstraint contactNumber) {
-    }
+  @Override
+  public void initialize(UsernameNullableConstraint contactNumber) {}
 
-    @Override public boolean isValid(String username, ConstraintValidatorContext cxt) {
-        if (StringUtils.isBlank(username))
-            return true;
-        return RegexUtil.isValidUsername(username);
-    }
-
+  @Override
+  public boolean isValid(String username, ConstraintValidatorContext cxt) {
+    if (StringUtils.isBlank(username)) return true;
+    return RegexUtil.isValidUsername(username);
+  }
 }

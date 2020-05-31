@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface VerifyEmailTokenRepository extends
-    MongoRepository<VerifyEmailToken, String> {
-    Optional<VerifyEmailToken> findByToken(String tokenString);
+@Repository
+public interface VerifyEmailTokenRepository extends MongoRepository<VerifyEmailToken, String> {
+  Optional<VerifyEmailToken> findByToken(String tokenString);
 }

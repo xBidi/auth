@@ -11,6 +11,7 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface SessionTokenRepository extends MongoRepository<SessionToken, String> {
-    Optional<SessionToken> findByToken(String tokenString);
+@Repository
+public interface SessionTokenRepository extends MongoRepository<SessionToken, String> {
+  Optional<SessionToken> findByToken(String tokenString);
 }

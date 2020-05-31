@@ -19,34 +19,36 @@ import java.io.IOException;
  *
  * @author diegotobalina
  */
-@Slf4j public class GoogleAuthenticationFilter extends OncePerRequestFilter {
+@Slf4j
+public class GoogleAuthenticationFilter extends OncePerRequestFilter {
 
-    private final GoogleService googleService;
+  private final GoogleService googleService;
 
-    public GoogleAuthenticationFilter(GoogleService googleService) {
-        this.googleService = googleService;
+  public GoogleAuthenticationFilter(GoogleService googleService) {
+    this.googleService = googleService;
+  }
+
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+      throws ServletException, IOException {
+    var authenticationUtil = new AuthenticationUtil(request, response, chain).invoke();
+    if (!authenticationUtil.isValid()) {
+      return;
     }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain chain) throws ServletException, IOException {
-        var authenticationUtil = new AuthenticationUtil(request, response, chain).invoke();
-        if (!authenticationUtil.isValid()) {
-            return;
-        }
-        try {
-            final String jwtWithPrefix = authenticationUtil.getJwtWithPrefix();
-            final String jwtWithoutPrefix = TokenUtil.removePrefix(jwtWithPrefix);
-            GoogleIdToken.Payload googleInfo = this.googleService.getGoogleInfo(jwtWithoutPrefix);
-            if (googleInfo == null) {
-                throw new Exception("google failed login");
-            }
-            User user = this.googleService.googleLogin(googleInfo);
-            authenticationUtil.authenticate(user);
-        } catch (Exception ex) {
-            log.warn("exception: {}", ex.getStackTrace());
-        } finally {
-            chain.doFilter(request, response);
-        }
+    try {
+      final String jwtWithPrefix = authenticationUtil.getJwtWithPrefix();
+      final String jwtWithoutPrefix = TokenUtil.removePrefix(jwtWithPrefix);
+      GoogleIdToken.Payload googleInfo = this.googleService.getGoogleInfo(jwtWithoutPrefix);
+      if (googleInfo == null) {
+        throw new Exception("google failed login");
+      }
+      User user = this.googleService.googleLogin(googleInfo);
+      authenticationUtil.authenticate(user);
+    } catch (Exception ex) {
+      log.warn("exception: {}", ex.getStackTrace());
+    } finally {
+      chain.doFilter(request, response);
     }
+  }
 }

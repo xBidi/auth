@@ -17,8 +17,22 @@ import javax.validation.constraints.NotNull;
  *
  * @author diegotobalina
  */
-@AllArgsConstructor @Getter @Setter @ToString public class RegisterInputDto {
-    @ApiModelProperty(example = "user") @UsernameConstraint private String username;
-    @ApiModelProperty(example = "email") @Email @NotNull @NotBlank private String email;
-    @ApiModelProperty(example = "password") @PasswordConstraint private String password;
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class RegisterInputDto {
+  @ApiModelProperty(example = "user")
+  @UsernameConstraint
+  private String username;
+
+  @ApiModelProperty(example = "email")
+  @Email
+  @NotNull
+  @NotBlank
+  private String email;
+
+  @ApiModelProperty(example = "password")
+  @PasswordConstraint
+  private String password;
 }

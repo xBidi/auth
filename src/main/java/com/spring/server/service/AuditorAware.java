@@ -6,20 +6,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
-@Slf4j public class AuditorAware implements org.springframework.data.domain.AuditorAware<String> {
-    @Override public Optional<String> getCurrentAuditor() {
-        try {
-            Object principal =
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (principal instanceof User) {
-                String userId = ((User) principal).getId();
-                return Optional.of(userId);
-            }
-            return Optional.of(principal.toString());
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-        }
-        return Optional.of("anonymousUser");
-
+@Slf4j
+public class AuditorAware implements org.springframework.data.domain.AuditorAware<String> {
+  @Override
+  public Optional<String> getCurrentAuditor() {
+    try {
+      Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      if (principal instanceof User) {
+        String userId = ((User) principal).getId();
+        return Optional.of(userId);
+      }
+      return Optional.of(principal.toString());
+    } catch (Exception e) {
+      log.warn(e.getMessage());
     }
+    return Optional.of("anonymousUser");
+  }
 }

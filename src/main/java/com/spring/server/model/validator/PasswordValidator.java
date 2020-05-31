@@ -7,13 +7,12 @@ import javax.validation.ConstraintValidatorContext;
 
 public class PasswordValidator implements ConstraintValidator<PasswordConstraint, String> {
 
-    @Override public void initialize(PasswordConstraint contactNumber) {
-    }
+  @Override
+  public void initialize(PasswordConstraint contactNumber) {}
 
-    @Override public boolean isValid(String password, ConstraintValidatorContext cxt) {
-        if (StringUtils.isBlank(password))
-            return false;
-        return (password.length() > 6 && password.length() < 254);
-    }
-
+  @Override
+  public boolean isValid(String password, ConstraintValidatorContext cxt) {
+    if (StringUtils.isBlank(password)) return false;
+    return (password.length() > 6 && password.length() < 254);
+  }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface ResetPasswordTokenRepository
-    extends MongoRepository<ResetPasswordToken, String> {
-    Optional<ResetPasswordToken> findByToken(String tokenString);
+@Repository
+public interface ResetPasswordTokenRepository extends MongoRepository<ResetPasswordToken, String> {
+  Optional<ResetPasswordToken> findByToken(String tokenString);
 }

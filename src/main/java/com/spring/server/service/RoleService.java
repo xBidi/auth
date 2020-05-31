@@ -13,15 +13,17 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Service @Slf4j public class RoleService {
+@Service
+@Slf4j
+public class RoleService {
 
-    @Autowired RoleRepository roleRepository;
+  @Autowired RoleRepository roleRepository;
 
-    public Role findByValue(String value) {
-        Optional<Role> optionalRole = this.roleRepository.findByValue(value);
-        if (!optionalRole.isPresent()) {
-            return null;
-        }
-        return optionalRole.get();
+  public Role findByValue(String value) {
+    Optional<Role> optionalRole = this.roleRepository.findByValue(value);
+    if (!optionalRole.isPresent()) {
+      return null;
     }
+    return optionalRole.get();
+  }
 }

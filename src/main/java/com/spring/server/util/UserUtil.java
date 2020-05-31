@@ -7,13 +7,13 @@ import java.security.Principal;
 
 public abstract class UserUtil {
 
-    public static User getUserFromPrincipal(Principal principal) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-            (UsernamePasswordAuthenticationToken) principal;
-        return (User) authenticationToken.getPrincipal();
-    }
+  public static User getUserFromPrincipal(Principal principal) {
+    UsernamePasswordAuthenticationToken authenticationToken =
+        (UsernamePasswordAuthenticationToken) principal;
+    return (User) authenticationToken.getPrincipal();
+  }
 
-    public static String getUserIdFromPrincipal(Principal principal) {
-        return getUserFromPrincipal(principal).getId();
-    }
+  public static String getUserIdFromPrincipal(Principal principal) {
+    return getUserFromPrincipal(principal).getId();
+  }
 }

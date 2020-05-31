@@ -12,15 +12,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  * @author diegotobalina
  */
-@NoArgsConstructor @Getter @ToString @Document(collection = "spring_role") public class Role extends Auditable{
-    @Id private String id;
-    private String name;
-    private String description;
-    @Indexed private String value;
+@NoArgsConstructor
+@Getter
+@ToString
+@Document(collection = "spring_role")
+public class Role extends Auditable {
+  @Id private String id;
+  private String name;
+  private String description;
+  @Indexed private String value;
 
-    public Role(String name, String description, String value) {
-        this.name = name;
-        this.description = description;
-        this.value = value;
-    }
+  public Role(String name, String description, String value) {
+    this.name = name;
+    this.description = description;
+    this.value = value;
+  }
 }

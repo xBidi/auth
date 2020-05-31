@@ -11,16 +11,19 @@ import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Component @Slf4j public class RequestLogger implements HandlerInterceptor {
+@Component
+@Slf4j
+public class RequestLogger implements HandlerInterceptor {
 
-    @Autowired LoggingService loggingService;
+  @Autowired LoggingService loggingService;
 
-    @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) {
-        if (DispatcherType.REQUEST.name().equals(request.getDispatcherType().name()) && request
-            .getMethod().equals(HttpMethod.GET.name())) {
-            loggingService.logRequest(request, null);
-        }
-        return true;
+  @Override
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
+    if (DispatcherType.REQUEST.name().equals(request.getDispatcherType().name())
+        && request.getMethod().equals(HttpMethod.GET.name())) {
+      loggingService.logRequest(request, null);
     }
+    return true;
+  }
 }

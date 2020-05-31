@@ -7,11 +7,11 @@ import javax.validation.ConstraintValidatorContext;
 
 public class JwtTokenValidator implements ConstraintValidator<JwtTokenConstraint, String> {
 
-    @Override public void initialize(JwtTokenConstraint jwt) {
-    }
+  @Override
+  public void initialize(JwtTokenConstraint jwt) {}
 
-    @Override public boolean isValid(String jwt, ConstraintValidatorContext cxt) {
-        return RegexUtil.isJwt(jwt);
-    }
-
+  @Override
+  public boolean isValid(String jwt, ConstraintValidatorContext cxt) {
+    return RegexUtil.isJwt(jwt);
+  }
 }

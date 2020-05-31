@@ -17,15 +17,19 @@ import java.security.Principal;
  *
  * @author diegotobalina
  */
-@Configuration @EnableSwagger2 @Profile("dev") @Slf4j public class SwaggerConfig {
-    @Bean public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2).
-            useDefaultResponseMessages(false).
-            ignoredParameterTypes(Principal.class).
-            select().
-            apis(RequestHandlerSelectors.basePackage("com.spring.server.controller")).
-            paths(PathSelectors.any()).
-            build();
-    }
-
+@Configuration
+@EnableSwagger2
+@Profile("dev")
+@Slf4j
+public class SwaggerConfig {
+  @Bean
+  public Docket api() {
+    return new Docket(DocumentationType.SWAGGER_2)
+        .useDefaultResponseMessages(false)
+        .ignoredParameterTypes(Principal.class)
+        .select()
+        .apis(RequestHandlerSelectors.basePackage("com.spring.server.controller"))
+        .paths(PathSelectors.any())
+        .build();
+  }
 }

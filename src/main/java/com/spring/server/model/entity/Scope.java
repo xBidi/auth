@@ -12,15 +12,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  * @author diegotobalina
  */
-@Getter @NoArgsConstructor @ToString @Document(collection = "spring_scope") public class Scope extends Auditable{
-    @Id private String id;
-    private String name;
-    private String description;
-    @Indexed private String value;
+@Getter
+@NoArgsConstructor
+@ToString
+@Document(collection = "spring_scope")
+public class Scope extends Auditable {
+  @Id private String id;
+  private String name;
+  private String description;
+  @Indexed private String value;
 
-    public Scope(String name, String description, String value) {
-        this.name = name;
-        this.description = description;
-        this.value = value;
-    }
+  public Scope(String name, String description, String value) {
+    this.name = name;
+    this.description = description;
+    this.value = value;
+  }
 }

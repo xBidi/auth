@@ -6,9 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
-@Configuration @EnableMongoAuditing(auditorAwareRef = "auditorAware") @Slf4j
+@Configuration
+@EnableMongoAuditing(auditorAwareRef = "auditorAware")
+@Slf4j
 public class AuditorConfig {
-    @Bean public org.springframework.data.domain.AuditorAware auditorAware() {
-        return new AuditorAware();
-    }
+  @Bean
+  public org.springframework.data.domain.AuditorAware auditorAware() {
+    return new AuditorAware();
+  }
 }

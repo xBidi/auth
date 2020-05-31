@@ -17,41 +17,47 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
-@Service public class GoogleService {
+@Service
+public class GoogleService {
 
-    @Autowired private UserServiceImpl userServiceImpl;
-    @Value("${google.oauth2.client_id}") private String googleClientId;
-    private NetHttpTransport transport;
-    private JacksonFactory jsonFactory;
+  @Autowired private UserServiceImpl userServiceImpl;
 
-    public GoogleIdToken.Payload getGoogleInfo(String jwt)
-        throws GeneralSecurityException, IOException {
-        if (transport == null && jsonFactory == null) {
-            transport = GoogleNetHttpTransport.newTrustedTransport();
-            jsonFactory = JacksonFactory.getDefaultInstance();
-        }
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-            .setAudience(Collections.singletonList(googleClientId)).build();
-        GoogleIdToken idToken = verifier.verify(jwt);
-        if (idToken != null) {
-            return idToken.getPayload();
-        } else {
-            return null;
-        }
+  @Value("${google.oauth2.client_id}")
+  private String googleClientId;
+
+  private NetHttpTransport transport;
+  private JacksonFactory jsonFactory;
+
+  public GoogleIdToken.Payload getGoogleInfo(String jwt)
+      throws GeneralSecurityException, IOException {
+    if (transport == null && jsonFactory == null) {
+      transport = GoogleNetHttpTransport.newTrustedTransport();
+      jsonFactory = JacksonFactory.getDefaultInstance();
     }
-
-    public User googleLogin(GoogleIdToken.Payload payload) throws Exception {
-        final String email = payload.getEmail();
-        final User userByEmail = this.userServiceImpl.findByEmail(email);
-        if (userByEmail != null) {
-            return userByEmail;
-        }
-        final String username = email.split("@")[0] + UUID.randomUUID().toString().substring(0, 4);
-        final String randomPassword =
-            System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
-        final Boolean emailVerified = payload.getEmailVerified();
-        User user = new User(username, email, randomPassword, emailVerified, new ArrayList<>(),
-            new ArrayList<>());
-        return userServiceImpl.createUser(user);
+    GoogleIdTokenVerifier verifier =
+        new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+            .setAudience(Collections.singletonList(googleClientId))
+            .build();
+    GoogleIdToken idToken = verifier.verify(jwt);
+    if (idToken != null) {
+      return idToken.getPayload();
+    } else {
+      return null;
     }
+  }
+
+  public User googleLogin(GoogleIdToken.Payload payload) throws Exception {
+    final String email = payload.getEmail();
+    final User userByEmail = this.userServiceImpl.findByEmail(email);
+    if (userByEmail != null) {
+      return userByEmail;
+    }
+    final String username = email.split("@")[0] + UUID.randomUUID().toString().substring(0, 4);
+    final String randomPassword = System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
+    final Boolean emailVerified = payload.getEmailVerified();
+    User user =
+        new User(
+            username, email, randomPassword, emailVerified, new ArrayList<>(), new ArrayList<>());
+    return userServiceImpl.createUser(user);
+  }
 }

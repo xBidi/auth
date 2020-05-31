@@ -11,6 +11,7 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface RoleRepository extends MongoRepository<Role, String> {
-    Optional<Role> findByValue(String value);
+@Repository
+public interface RoleRepository extends MongoRepository<Role, String> {
+  Optional<Role> findByValue(String value);
 }

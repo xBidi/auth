@@ -13,17 +13,23 @@ import java.util.stream.Collectors;
  *
  * @author diegotobalina
  */
-@AllArgsConstructor @NoArgsConstructor @Getter @Setter @ToString public class TokenInfoJwtOutputDto
-    extends TokenInfoOutputDto {
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+public class TokenInfoJwtOutputDto extends TokenInfoOutputDto {
 
-    @ApiModelProperty(example = "[ROLE_USER,ROLE_ADMIN]") private List<String> roles;
-    @ApiModelProperty(example = "[READ,CREATE]") private List<String> scopes;
+  @ApiModelProperty(example = "[ROLE_USER,ROLE_ADMIN]")
+  private List<String> roles;
 
-    public TokenInfoJwtOutputDto(String token, Date issuedAt, Date expiration, User user) {
-        super(token, issuedAt, expiration, user.getId());
-        this.roles =
-            user.getRoles().stream().map(role -> role.getValue()).collect(Collectors.toList());
-        this.scopes =
-            user.getScopes().stream().map(scope -> scope.getValue()).collect(Collectors.toList());
-    }
+  @ApiModelProperty(example = "[READ,CREATE]")
+  private List<String> scopes;
+
+  public TokenInfoJwtOutputDto(String token, Date issuedAt, Date expiration, User user) {
+    super(token, issuedAt, expiration, user.getId());
+    this.roles = user.getRoles().stream().map(role -> role.getValue()).collect(Collectors.toList());
+    this.scopes =
+        user.getScopes().stream().map(scope -> scope.getValue()).collect(Collectors.toList());
+  }
 }

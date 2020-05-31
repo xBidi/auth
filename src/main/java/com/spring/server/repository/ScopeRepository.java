@@ -11,6 +11,7 @@ import java.util.Optional;
  *
  * @author diegotobalina
  */
-@Repository public interface ScopeRepository extends MongoRepository<Scope, String> {
-    Optional<Scope> findByValue(String value);
+@Repository
+public interface ScopeRepository extends MongoRepository<Scope, String> {
+  Optional<Scope> findByValue(String value);
 }

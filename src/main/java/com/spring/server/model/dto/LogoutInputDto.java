@@ -9,7 +9,13 @@ import lombok.*;
  *
  * @author diegotobalina
  */
-@AllArgsConstructor @Getter @Setter @NoArgsConstructor @ToString public class LogoutInputDto {
-    @ApiModelProperty(example = "Bearer 1582711356070-5e85f5f2-a2bc-4e08-b0ff-7a4aa55951c1")
-    @SessionTokenConstraint private String token;
+@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
+public class LogoutInputDto {
+  @ApiModelProperty(example = "Bearer 1582711356070-5e85f5f2-a2bc-4e08-b0ff-7a4aa55951c1")
+  @SessionTokenConstraint
+  private String token;
 }
