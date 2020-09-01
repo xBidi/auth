@@ -141,6 +141,7 @@ public class User extends Auditable implements Serializable {
         this.roles.set(roles.indexOf(role), newRole);
       }
     }
+    fixScopes();
   }
 
   public void addRoles(List<Role> roles) {
