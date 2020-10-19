@@ -11,15 +11,3 @@ maven -> https://maven.apache.org/
 project lombok -> https://projectlombok.org/
 docker-compose -> https://docs.docker.com/compose/install/
 ````
-
-### Start application
-````
-sh ./deploy.sh
-````
-
-## Wiki 
-
-Where is the wiki ?
-````
-./wiki folder
-````

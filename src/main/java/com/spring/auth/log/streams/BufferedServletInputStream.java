@@ -1,4 +1,4 @@
-package com.spring.auth.logs.infrastructure;
+package com.spring.auth.log.streams;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;

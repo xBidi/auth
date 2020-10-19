@@ -1,4 +1,5 @@
-package com.spring.auth.logs.infrastructure;
+package com.spring.auth.log.streams;
+
 
 import org.bouncycastle.util.io.TeeOutputStream;
 

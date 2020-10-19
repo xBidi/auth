@@ -11,4 +11,7 @@ import java.util.List;
 public interface AccessPort {
   TokenUtil.JwtWrapper access(String token, List<String> roleValues, List<String> scopeValues)
       throws NotFoundException, InvalidTokenException, LockedUserException;
+
+  TokenUtil.JwtWrapper access(String userId)
+          throws NotFoundException, InvalidTokenException, LockedUserException;
 }

@@ -86,4 +86,9 @@ public class Role extends Auditable implements Serializable {
         scopes.stream().filter(s -> s.getId().equals(scope.getId())).findFirst();
     return optional.isPresent();
   }
+
+  public void updateScopes(List<Scope> scopes) {
+    this.scopes = scopes;
+  }
+
 }
