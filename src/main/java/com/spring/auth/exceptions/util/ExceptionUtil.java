@@ -24,8 +24,9 @@ public abstract class ExceptionUtil {
 
     private static String getMessage(final Exception ex) {
         // final String methodName = getMethodName(ExceptionUtils.getRootCause(ex));
-        final String rootCause = ExceptionUtils.getRootCauseMessage(ex);
-        return String.format("%s", rootCause);
+        // final String rootCause = ExceptionUtils.getRootCauseMessage(ex);
+        final String message = ex.getMessage();
+        return String.format("%s", message);
     }
 
     private static String getMethodName(final Throwable cause) {
